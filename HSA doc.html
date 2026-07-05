@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ترجمة مشروع تخرج: بنية أمنية متعددة الطبقات لمنصة SaaS</title>
+    <style>
+/* ===================================================================
+   HSA Graduation Project - Arabic Translation & Academic Formatting
+   Designer: Eng. Osama Al-Akhalie
+   Version: 1.0
+   =================================================================== */
+
+/* -------------------------------------------------------------------
+   1. ROOT Variables (Global Design System)
+   ------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+    /* Colors */
+    --primary-color: #0d47a1; /* Dark Blue for headings and accents */
+    --secondary-color: #424242; /* Dark Gray for main text */
+    --tertiary-color: #757575; /* Lighter Gray for secondary text, captions */
+    --border-color: #e0e0e0; /* Light Gray for borders and tables */
+    --background-color-page: #ffffff; /* White for the page itself */
+    --background-color-body: #f5f5f5; /* Off-white for the area around the page */
+    --highlight-bg: #e3f2fd; /* Light Blue for notes and table headers */
+    --highlight-border: #90caf9; /* Soft Blue for highlight borders */
+
+    /* Typography */
+    --font-family-arabic: 'Cairo', sans-serif;
+    --font-family-english: 'Roboto', sans-serif;
+    --font-size-base: 11pt; /* Base font size for paragraphs */
+    --line-height-base: 1.7;
+
+    /* Spacing & Dimensions */
+    --page-width: 24cm;
+    --page-margin-vertical: 2cm;
+    --page-margin-horizontal: 2cm;
+    --spacing-unit: 8px;
+
+    /* Border Radius */
+    --border-radius: 4px;
+}
+
+/* -------------------------------------------------------------------
+   2. Global Resets & Body Styling
+   ------------------------------------------------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: var(--font-family-arabic);
+    background-color: var(--background-color-body);
+    color: var(--secondary-color);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    direction: rtl; /* Right-to-Left for Arabic */
+}
+
+/* -------------------------------------------------------------------
+   3. Page Structure & Layout
+   ------------------------------------------------------------------- */
+.page {
+    width: var(--page-width);
+    min-height: auto;
+    margin: calc(var(--spacing-unit) * 4) auto;
+    padding: var(--page-margin-vertical) var(--page-margin-horizontal);
+    background-color: var(--background-color-page);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex-grow: 1;
+}
+
+header.page-header,
+footer.page-footer {
+    position: absolute;
+    left: var(--page-margin-horizontal);
+    right: var(--page-margin-horizontal);
+    font-size: 9pt;
+    color: var(--tertiary-color);
+    font-family: var(--font-family-english);
+}
+
+header.page-header {
+    top: 1cm;
+    text-align: left;
+}
+
+footer.page-footer {
+    bottom: 1cm;
+    text-align: center;
+}
+
+/* -------------------------------------------------------------------
+   4. Typography & Headings
+   ------------------------------------------------------------------- */
+/* All headings must remain in English as per instructions */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-english);
+    color: var(--primary-color);
+    margin-bottom: calc(var(--spacing-unit) * 2.5);
+    margin-top: calc(var(--spacing-unit) * 4);
+    font-weight: 700;
+    direction: ltr; /* Ensure headings are LTR */
+    text-align: left;
+}
+
+h1 { font-size: 22pt; font-weight: 800; border-bottom: 2px solid var(--border-color); padding-bottom: var(--spacing-unit); margin-bottom: calc(var(--spacing-unit) * 4); }
+h2 { font-size: 18pt; }
+h3 { font-size: 14pt; font-weight: 600; }
+h4 { font-size: 12pt; color: var(--secondary-color); }
+
+p {
+    margin-bottom: calc(var(--spacing-unit) * 2);
+    text-align: justify;
+    hyphens: auto;
+}
+
+/* Keep technical terms in English font */
+.tech-term {
+    font-family: var(--font-family-english);
+    font-weight: 500;
+    color: #0d47a1; /* Same as primary color for emphasis */
+    direction: ltr;
+    display: inline-block; /* Helps with directionality */
+}
+
+/* -------------------------------------------------------------------
+   5. Lists (UL/OL)
+   ------------------------------------------------------------------- */
+ul, ol {
+    margin-right: calc(var(--spacing-unit) * 4); /* Indentation for RTL */
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+li {
+    margin-bottom: var(--spacing-unit);
+    text-align: justify;
+}
+
+/* Custom bullet color */
+ul li::marker {
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+/* -------------------------------------------------------------------
+   6. Tables
+   ------------------------------------------------------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: calc(var(--spacing-unit) * 3) 0;
+    font-size: 10pt;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-unit) calc(var(--spacing-unit) * 1.5);
+    text-align: right;
+    vertical-align: top;
+}
+
+thead th {
+    background-color: var(--highlight-bg);
+    color: var(--primary-color);
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Style English content inside tables */
+th, td {
+    font-family: var(--font-family-arabic);
+}
+td:lang(en), th:lang(en) {
+    font-family: var(--font-family-english);
+    direction: ltr;
+    text-align: left;
+}
+tbody tr:nth-of-type(even) {
+    background-color: #fafafa;
+}
+
+/* -------------------------------------------------------------------
+   7. Images & Captions
+   ------------------------------------------------------------------- */
+figure {
+    margin: calc(var(--spacing-unit) * 4) auto;
+    text-align: center;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-unit);
+}
+
+figcaption {
+    font-size: 10pt;
+    color: var(--tertiary-color);
+    font-style: italic;
+    margin-top: var(--spacing-unit);
+}
+.figure-title{
+    font-family: var(--font-family-english);
+    font-weight: 700;
+    color: var(--secondary-color);
+}
+
+/* -------------------------------------------------------------------
+   8. Specific Components
+   ------------------------------------------------------------------- */
+/* Cover Page */
+.cover-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 25.7cm; /* A4 height - vertical margins */
+}
+.cover-page .project-title-english {
+    font-family: var(--font-family-english);
+    font-size: 28pt;
+    color: var(--primary-color);
+    font-weight: 800;
+    border: none;
+    margin: 0;
+}
+.cover-page .designer-credit {
+    margin-top: calc(var(--spacing-unit) * 5);
+    font-size: 14pt;
+    font-weight: 600;
+}
+
+/* Academic Disclaimer */
+.disclaimer {
+    padding: calc(var(--spacing-unit) * 2);
+    margin: calc(var(--spacing-unit) * 3) 0;
+    background-color: rgba(255, 235, 59, 0.1); /* Light yellow tint */
+    border-right: 4px solid #fbc02d; /* Yellow border */
+    font-size: 10pt;
+    font-style: italic;
+}
+
+/* Table of Contents */
+.table-of-contents ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+.table-of-contents li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: var(--spacing-unit) 0;
+    font-family: var(--font-family-english);
+    font-weight: 500;
+}
+.table-of-contents .toc-title {
+    order: 1;
+}
+.table-of-contents .toc-dots {
+    flex-grow: 1;
+    border-bottom: 1px dotted var(--tertiary-color);
+    margin: 0 var(--spacing-unit);
+    transform: translateY(-4px);
+    order: 2;
+}
+.table-of-contents .toc-page-num {
+    order: 3;
+}
+
+/* Designer's Highlight Box */
+.highlight-box {
+    padding: calc(var(--spacing-unit) * 2);
+    margin: calc(var(--spacing-unit) * 3) 0;
+    background: var(--highlight-bg);
+    border: 1px solid var(--highlight-border);
+    border-right-width: 5px;
+    border-right-color: var(--primary-color);
+    border-radius: var(--border-radius);
+}
+.highlight-box .designer-note-title {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 10pt;
+    display: block;
+    margin-bottom: var(--spacing-unit);
+}
+
+/* Chapter Transition Sentences */
+.chapter-intro, .chapter-outro {
+    font-style: italic;
+    color: var(--tertiary-color);
+    text-align: center;
+    margin: calc(var(--spacing-unit) * 3) auto;
+    max-width: 80%;
+}
+</style> <!-- Make sure to name your CSS file 'style.css' -->
+</head>
+<body>
+
+    <!-- ===================================================================
+         Cover Page 
+    ==================================================================== -->
+    <section class="page cover-page">
+        <h1 class="project-title-english">
+            A Defense-in-Depth Security Architecture for a Production-Grade Multi-Tenant SaaS Help Desk Platform
+        </h1>
+        <p class="designer-credit">
+            ترجمة وتصميم: م. أسامة الأكحلي
+        </p>
+    </section>
+
+    <!-- ===================================================================
+         Disclaimer & Table of Contents Page
+    ==================================================================== -->
+    <section class="page">
+        <!-- Footer for this page (No header) -->
+        <footer class="page-footer"></footer>
+        
+        <div class="page-content">
+            <div class="disclaimer">
+                <strong>تنويه:</strong> هذا الملف هو ترجمة وتنسيق اجتهادي لتقرير مشروع التخرج. لا غنى عن الرجوع للمصدر الأصلي لإثراء المفاهيم اللغوية والتخصصية، وقد يحتوي هذا الملف على بعض القصور أو الأخطاء غير المقصودة.
+            </div>
+
+            <h1>Table of Contents</h1>
+            <nav class="table-of-contents">
+                <ul>
+                    <li>
+                        <span class="toc-title">Chapter 1: Introduction</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">1</span>
+                    </li>
+                    <li>
+                        <span class="toc-title">Chapter 2: Literature Review</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">11</span>
+                    </li>
+                    <li>
+                        <span class="toc-title">Chapter 3: System Design and Methodology</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">23</span>
+                    </li>
+                    <li>
+                        <span class="toc-title">Chapter 4: Results and Discussion</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">52</span>
+                    </li>
+                    <li>
+                        <span class="toc-title">Chapter 5: Conclusion and Future Work</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">62</span>
+                    </li>
+                     <li>
+                        <span class="toc-title">References</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">67</span>
+                    </li>
+                    <li>
+                        <span class="toc-title">Appendix A: RLS Policy Inventory</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">70</span>
+                    </li>
+                    <li>
+                        <span class="toc-title">Appendix B: Database Trigger Inventory</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">72</span>
+                    </li>
+                    <li>
+                        <span class="toc-title">Appendix C: Security Headers Configuration</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">74</span>
+                    </li>
+                     <li>
+                        <span class="toc-title">Appendix D: STRIDE Threat Model — Full Matrix</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">75</span>
+                    </li>
+                     <li>
+                        <span class="toc-title">Appendix E: Abbreviations</span>
+                        <span class="toc-dots"></span>
+                        <span class="toc-page-num">77</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 1: Introduction - Title Page (Page 1)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">1</footer>
+        <div class="page-content cover-page"> <!-- Re-using cover-page style for vertical centering -->
+            <h1>Chapter 1<br>Introduction</h1>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 2)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">2</footer>
+        <div class="page-content">
+            
+            <p class="chapter-intro">
+                يبدأ هذا الفصل بتقديم لمحة عامة عن التحول الرقمي في عمليات دعم العملاء والتحديات الأمنية المصاحبة، ممهداً الطريق لعرض بنية المشروع المقترحة.
+            </p>
+
+            <h2>1.1 Introduction</h2>
+            <p>
+                لقد أدى التبني السريع لمنصات البرمجيات كخدمة (<span class="tech-term">Software-as-a-Service - SaaS</span>) المستندة إلى السحابة إلى إعادة تشكيل الطريقة التي تدير بها المؤسسات عمليات دعم العملاء بشكل جذري. يُتوقع من الشركات الحديثة الحفاظ على دعم سريع الاستجابة ومدرك للسياق عبر قنوات اتصال رقمية متعددة في وقت واحد — مثل <span class="tech-term">WhatsApp</span>، <span class="tech-term">Telegram</span>، <span class="tech-term">Instagram</span>، <span class="tech-term">Facebook Messenger</span>، و <span class="tech-term">TikTok</span>. هذا التحول نحو أنظمة دعم العملاء متعددة القنوات والمستضافة سحابيًا قدّم سطح هجوم (<span class="tech-term">attack surface</span>) حرجًا ومتناميًا لم تكن النماذج الأمنية التقليدية مصممة للتعامل معه [1].
+            </p>
+            <p>
+                تطرح معماريات <span class="tech-term">SaaS</span> متعددة المستأجرين (<span class="tech-term">Multi-tenant</span>)، حيث تتشارك عدة منظمات (مستأجرين) بنية تحتية برمجية مشتركة، مشهدًا أمنيًا مليئًا بالتحديات بشكل خاص. يمكن أن تؤدي ثغرة واحدة في منطق عزل المستأجرين إلى كشف بيانات العملاء الحساسة لمنظمة ما لمنظمة أخرى. تتجاوز عواقب مثل هذه الاختراقات الخسائر المالية، حيث أنها تؤدي إلى تآكل ثقة العملاء، وتستدعي عقوبات تنظيمية بموجب أطر عمل مثل لائحة حماية البيانات العامة (<span class="tech-term">GDPR</span>) ومعيار <span class="tech-term">SOC 2</span>، ويمكن أن تسبب ضررًا لا يمكن إصلاحه لسمعة الشركة [2].
+            </p>
+            <p>
+                على الرغم من نضج منصات مكتب المساعدة التجارية مثل <span class="tech-term">Zendesk</span>، <span class="tech-term">Freshdesk</span>، و <span class="tech-term">Intercom</span>، نادرًا ما يتم الكشف عن البنى الأمنية الكامنة وراء هذه الأنظمة أو تقييمها وفقًا لأطر نمذجة التهديدات الرسمية. لا تزال الأدبيات الأكاديمية حول أمن <span class="tech-term">SaaS</span> متعدد المستأجرين التطبيقي - خاصة في سياق منصات دعم العملاء التي تتعامل مع اتصالات حساسة متعددة القنوات - محدودة. هذه الفجوة تخلق حاجة لبحث يجسّر بين المبادئ الأمنية النظرية والتطبيقات العملية التي تم التحقق من صحتها في بيئة الإنتاج.
+            </p>
+            <p>
+                يعالج هذا المشروع هذه الفجوة من خلال تقديم تصميم وتنفيذ وتقييم أمني لتطبيق <span class="tech-term">HSA (Help Desk Support Application)</span>، وهو منصة مكتب مساعدة <span class="tech-term">SaaS</span> متعددة المستأجرين من الدرجة الإنتاجية، تم بناؤها مع اعتبار الأمن مبدأً تصميميًا أساسيًا لها — وليس كإضافة لاحقة. تعمل المنصة كنظام دعم عملاء وظيفي ودراسة حالة شاملة في الأمن السيبراني التطبيقي لمعماريات <span class="tech-term">SaaS</span> السحابية الأصلية.
+            </p>
+        </div>
+    </section>
+    <!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 3)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">3</footer>
+        <div class="page-content">
+            <h2>1.2 Background</h2>
+
+            <h3>1.2.1 Multi-Tenant SaaS Security Challenges</h3>
+            <p>
+                تمكّن البنية متعددة المستأجرين (<span class="tech-term">Multi-tenancy</span>) مزودي خدمة <span class="tech-term">SaaS</span> من خدمة عدة عملاء من خلال نسخة تطبيق واحدة، مما يحقق وفورات الحجم في البنية التحتية والعمليات. ومع ذلك، يقدّم هذا النموذج القائم على البنية التحتية المشتركة تحديات أمنية جوهرية لا تواجهها التطبيقات أحادية المستأجر (<span class="tech-term">single-tenant</span>) [3]:
+            </p>
+            <ul>
+                <li>
+                    <strong>Data Isolation:</strong> ضمان عدم إمكانية الوصول إلى بيانات مستأجر معين، أو تعديلها، أو استنتاجها من قبل مستأجر آخر، حتى لو كانا يتشاركان نفس خادم قاعدة البيانات.
+                </li>
+                <li>
+                    <strong>Access Control Complexity:</strong> إدارة المصادقة والترخيص عبر حدود تنظيمية متعددة، حيث قد يكون لكل مستأجر تسلسل هرمي خاص بالأدوار ونموذج أذونات مختلف.
+                </li>
+                <li>
+                    <strong>Noisy Neighbor Attacks:</strong> منع عمليات مستأجر معين من التأثير سلبًا على أداء أو توفر خدمات المستأجرين الآخرين من خلال استنفاد الموارد.
+                </li>
+                <li>
+                    <strong>Tenant Enumeration:</strong> الحماية ضد الهجمات التي تحاول اكتشاف وجود وهوية المستأجرين الآخرين على المنصة.
+                </li>
+            </ul>
+            <p>
+                توجد ثلاثة نماذج أساسية للتعددية في بنية قواعد البيانات، يقدم كل منها مقايضات أمنية مختلفة:
+            </p>
+            <ol>
+                <li>
+                    <strong>Shared-Table Multi-Tenancy:</strong> يتشارك جميع المستأجرين نفس جداول قاعدة البيانات، ويتم التمييز بينهم عبر عمود <span class="tech-term">tenant_id</span>. هذا النهج هو الأكثر كفاءة من حيث استخدام الموارد ولكنه يوفر أضعف عزل — حيث إن جملة <span class="tech-term">WHERE</span> مفقودة في استعلام واحد يمكن أن تكشف بيانات جميع المستأجرين.
+                </li>
+                <li>
+                    <strong>Schema-Per-Tenant Isolation:</strong> يحصل كل مستأجر على مخطط (<span class="tech-term">schema</span>) قاعدة بيانات مخصص داخل قاعدة بيانات مشتركة. يوفر هذا النهج عزلاً منطقيًا قويًا مع عبء تشغيلي معتدل.
+                </li>
+                <li>
+                    <strong>Database-Per-Tenant Isolation:</strong> يحصل كل مستأجر على قاعدة بيانات منفصلة تمامًا. يوفر هذا النهج أقوى عزل ولكنه مكلف تشغيليًا وغير عملي على نطاق واسع.
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 4)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">4</footer>
+        <div class="page-content">
+            <h3>1.2.2 Defense-in-Depth</h3>
+            <p>
+                الدفاع في العمق (<span class="tech-term">Defense-in-depth</span>) هي استراتيجية أمنية توظف طبقات حماية متعددة، لضمان أن لا تتمكن نقطة فشل واحدة من اختراق النظام بأكمله [4]. في سياق تطبيقات الويب، تشمل هذه الطبقات عادةً ما يلي:
+            </p>
+            <ul>
+                <li>
+                    <strong>Network/Transport Layer:</strong> تشفير <span class="tech-term">TLS</span>، ترويسات سياسة أمن المحتوى (<span class="tech-term">CSP</span>)، وترويسات أمان النقل الصارم لـ <span class="tech-term">HTTP (HSTS)</span>.
+                </li>
+                <li>
+                    <strong>Application Layer:</strong> المصادقة، إدارة الجلسات، التحقق من صحة المدخلات، وتحديد معدل الطلبات (<span class="tech-term">rate limiting</span>).
+                </li>
+                <li>
+                    <strong>Access Control Layer:</strong> التحكم في الوصول القائم على الأدوار (<span class="tech-term">RBAC</span>)، حراس البرمجيات الوسيطة (<span class="tech-term">middleware guards</span>)، وحماية مسارات <span class="tech-term">API</span>.
+                </li>
+                <li>
+                    <strong>Data Layer:</strong> أمان على مستوى الصف في قاعدة البيانات (<span class="tech-term">RLS</span>)، عزل المخططات (<span class="tech-term">schema isolation</span>)، التخزين المشفر، والاستعلامات المُعَدّة (<span class="tech-term">parameterized queries</span>).
+                </li>
+                <li>
+                    <strong>Monitoring Layer:</strong> تسجيل التدقيق، كشف الشذوذ، وتخزين السجلات غير القابلة للتغيير.
+                </li>
+            </ul>
+            <p>
+                يضمن هذا المبدأ أنه إذا تم اختراق طبقة واحدة (على سبيل المثال، تجاوز المهاجم للمصادقة)، فإن الطبقات اللاحقة (مثل سياسات <span class="tech-term">RLS</span> وعزل المخططات) تستمر في حماية البيانات الأساسية.
+            </p>
+
+            <figure>
+                <img src="1.png" alt="مخطط يوضح طبقات استراتيجية الدفاع في العمق">
+                <figcaption>
+                    <span class="figure-title">Figure 1: Defense-in-Depth: Security Onion</span>
+                    <br>
+                    يوضح هذا المخطط، المعروف بـ "بصلة الأمان"، البنية الأمنية متعددة الطبقات المطبقة في المشروع. تبدأ من الطبقة الخارجية (الشبكة) وصولاً إلى أعمق طبقة (المراقبة)، حيث تمثل كل طبقة حاجزًا أمنيًا مستقلاً. الفكرة الأساسية هي أنه حتى لو تمكن المهاجم من تجاوز طبقة واحدة، فإنه سيواجه دفاعات إضافية في الطبقات التالية، مما يعزز صمود النظام بشكل كبير.
+                </figcaption>
+            </figure>
+            
+            <div class="highlight-box">
+                <span class="designer-note-title">إضافة المصمم:</span>
+                <p>
+                    مفهوم "بصلة الأمان" (Security Onion) هو استعارة شائعة في الأمن السيبراني لوصف استراتيجية <span class="tech-term">Defense-in-Depth</span>. تمامًا مثل البصلة التي تتكون من عدة طبقات، يتم بناء أمان النظام بحيث لا توجد نقطة فشل واحدة. كل طبقة في المخطط أعلاه (مثل <span class="tech-term">TLS</span>، <span class="tech-term">JWT Auth</span>، <span class="tech-term">RBAC</span>، <span class="tech-term">RLS</span>) تعمل بشكل مستقل للتحقق من شرعية الطلب، مما يجعل اختراق البيانات يتطلب تجاوز سلسلة من الدفاعات المترابطة بدلاً من تجاوز دفاع واحد فقط.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 5)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">5</footer>
+        <div class="page-content">
+            <h3>1.2.3 The STRIDE Threat Modeling Framework</h3>
+            <p>
+                <span class="tech-term">STRIDE</span> هو منهجية منظمة لنمذجة التهديدات تم تطويرها بواسطة مايكروسوفت، وتصنف التهديدات الأمنية إلى ست فئات [5]:
+            </p>
+            
+            <table>
+                <caption>Table 1.1: Multi-Tenant SaaS Security Challenges</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Category</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en"><strong>Spoofing</strong></td><td>انتحال هوية مستخدم أو نظام أو كيان آخر.</td></tr>
+                    <tr><td lang="en"><strong>Tampering</strong></td><td>التعديل غير المصرح به للبيانات أو الكود.</td></tr>
+                    <tr><td lang="en"><strong>Repudiation</strong></td><td>إنكار المسؤولية عن إجراء تم تنفيذه دون وجود سجلات كافية.</td></tr>
+                    <tr><td lang="en"><strong>Information Disclosure</strong></td><td>الوصول غير المصرح به إلى بيانات حساسة.</td></tr>
+                    <tr><td lang="en"><strong>Denial of Service</strong></td><td>جعل نظام أو مورد غير متاح.</td></tr>
+                    <tr><td lang="en"><strong>Elevation of Privilege</strong></td><td>الحصول على صلاحيات تتجاوز الأذونات الممنوحة.</td></tr>
+                </tbody>
+            </table>
+
+            <p>
+                يوفر نموذج <span class="tech-term">STRIDE</span> نهجًا منظمًا لتحديد التهديدات عبر جميع مكونات النظام وحدود الثقة، مما يضمن تغطية أمنية شاملة بدلاً من الترقيع العشوائي للثغرات.
+            </p>
+
+            <h3>1.2.4 OWASP Top 10 Relevance</h3>
+            <p>
+                يمثل مشروع أمان تطبيقات الويب المفتوحة (<span class="tech-term">OWASP</span>) قائمة بأخطر 10 مخاطر أمنية لتطبيقات الويب [6]. في سياق <span class="tech-term">SaaS</span> متعدد المستأجرين، تكتسب العديد من فئات <span class="tech-term">OWASP</span> أهمية مضاعفة:
+            </p>
+            <ul>
+                <li>
+                    <strong>A01: Broken Access Control</strong> — في الأنظمة متعددة المستأجرين، يمكن أن تؤدي إخفاقات التحكم في الوصول إلى كشف بيانات مستأجرين آخرين، وليس مجرد تصعيد صلاحيات مستخدم واحد.
+                </li>
+                <li>
+                    <strong>A03: Injection</strong> — يمكن لحقن <span class="tech-term">SQL</span> في قاعدة بيانات متعددة المستأجرين أن يكشف بيانات جميع المستأجرين في وقت واحد.
+                </li>
+                <li>
+                    <strong>A07: Identification and Authentication Failures</strong> — ضعف المصادقة في منصة مشتركة يؤثر على جميع المستأجرين، وليس فقط على المستخدمين الفرديين.
+                </li>
+            </ul>
+
+            <h2>1.3 Problem Statement</h2>
+            <p>
+                تُظهر منصات مكتب المساعدة ودعم العملاء الحالية أوجه القصور الأمنية التالية عند تقييمها وفقًا لمعايير الأمن السيبراني الحديثة:
+            </p>
+            <ol>
+                <li>
+                    <strong>Insufficient Tenant Isolation:</strong> تستخدم معظم المنصات التجارية بنية <span class="tech-term">shared-table multi-tenancy</span> مع فلترة على مستوى التطبيق (مثل: <span class="tech-term">WHERE tenant_id = ?</span>). لا يوفر هذا النهج أي ضمان على مستوى قاعدة البيانات ضد تسرب البيانات بين المستأجرين. استعلام واحد بدون فلتر المستأجر — سواء تم تقديمه بسبب خطأ برمجي، أو حقن <span class="tech-term">SQL</span>، أو إغفال من مطور — يمكن أن يكشف البيانات عبر جميع المستأجرين.
+                </li>
+            </ol>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 6)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">6</footer>
+        <div class="page-content">
+            <ol start="2">
+                <li>
+                    <strong>Absence of Defense-in-Depth Architecture:</strong> عادة ما تكون الضوابط الأمنية مركزة في طبقة واحدة (غالبًا طبقة التطبيق). لا يوجد إنفاذ متعدد الطبقات حيث تقوم سياسات على مستوى قاعدة البيانات بالتحقق من حقوق الوصول بشكل مستقل، بغض النظر عن سلوك طبقة التطبيق.
+                </li>
+                <li>
+                    <strong>Inadequate Audit Trails:</strong> تفتقر العديد من المنصات إلى سجلات تدقيق شاملة وغير قابلة للتغيير تسجل جميع الإجراءات ذات الصلة بالأمن بتفاصيل كافية للتحليل الجنائي والامتثال التنظيمي.
+                </li>
+                <li>
+                    <strong>Limited Protection Against OWASP Top 10 in Multi-Tenant Context:</strong> إجراءات التخفيف القياسية من <span class="tech-term">OWASP</span> ضرورية ولكنها غير كافية للبيئات متعددة المستأجرين، والتي تتطلب ضوابط إضافية مثل عزل المخططات لكل مستأجر وسياسات <span class="tech-term">RLS</span> المخصصة للمستأجرين.
+                </li>
+                <li>
+                    <strong>Unaddressed AI Security Risks:</strong> مع دمج المنصات لميزات مدعومة بالذكاء الاصطناعي، تظهر نواقل هجوم جديدة — بما في ذلك حقن الأوامر (<span class="tech-term">prompt injection</span>)، تسرب البيانات عبر مزودي الذكاء الاصطناعي، وسلوك الذكاء الاصطناعي غير المتحكم فيه — وهي مخاطر لا تعالجها المنصات الحالية بشكل منهجي.
+                </li>
+            </ol>
+
+            <h2>1.4 Motivation</h2>
+            <p>
+                ينبع الدافع لهذا المشروع من ثلاثة عوامل متقاربة:
+            </p>
+
+            <h3>1.4.1 Real-World SaaS Security Breaches</h3>
+            <p>
+                تُظهر الاختراقات الأخيرة البارزة في منصات <span class="tech-term">SaaS</span> خطورة الإخفاقات الأمنية في البيئات متعددة المستأجرين:
+            </p>
+            <ul>
+                <li>
+                    اختراق <span class="tech-term">Okta</span> في عام 2023، حيث تم اختراق نظام إدارة حالات الدعم، مما أدى إلى كشف رموز جلسات العملاء وبيانات تذاكر الدعم عبر حدود تنظيمية متعددة [7].
+                </li>
+                <li>
+                    ثغرات متعددة في <span class="tech-term">Zendesk (CVE-2023-4863, CVE-2022-4900)</span> سمحت بكشف المعلومات بين المستأجرين من خلال نقاط نهاية <span class="tech-term">API</span> ذات نطاق غير صحيح.
+                </li>
+                <li>
+                    هجوم سلسلة التوريد على <span class="tech-term">Kaseya VSA</span> في عام 2021، حيث تم استغلال منصة إدارة متعددة المستأجرين لنشر برامج الفدية عبر مئات المؤسسات التابعة في وقت واحد [8].
+                </li>
+            </ul>
+            <p>
+                تؤكد هذه الحوادث أن أمن <span class="tech-term">SaaS</span> متعدد المستأجرين ليس مجرد مصدر قلق نظري، بل هو ناقل هجوم نشط ومُستغل.
+            </p>
+            
+            <h3>1.4.2 Regulatory and Compliance Pressure</h3>
+            <p>
+                يُطلب من المؤسسات العاملة في الصناعات المنظمة بشكل متزايد إثبات أن موردي <span class="tech-term">SaaS</span> يطبقون ضوابط أمنية كافية. تفرض أطر عمل مثل <span class="tech-term">SOC 2 Type II</span>، <span class="tech-term">ISO 27001</span>، و <span class="tech-term">GDPR</span> تقديم أدلة على عزل البيانات، والتحكم في الوصول، وتسجيل التدقيق، وقدرات الاستجابة للحوادث — وهي متطلبات لا تستطيع العديد من منصات <span class="tech-term">SaaS</span> تلبيتها بشكل يمكن التحقق منه [9].
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 7)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">7</footer>
+        <div class="page-content">
+            <h3>1.4.3 Academic Gap</h3>
+            <p>
+                في حين أن بنية <span class="tech-term">SaaS</span> متعددة المستأجرين وأمن تطبيقات الويب مدروسان جيدًا بشكل فردي، هناك ندرة في الأعمال المنشورة التي:
+            </p>
+            <ul>
+                <li>
+                    تطبق وتقيّم استراتيجية الدفاع في العمق الأمنية في منصة <span class="tech-term">SaaS</span> متعددة المستأجرين حقيقية ومنشورة في بيئة الإنتاج.
+                </li>
+                <li>
+                    تطبق نمذجة التهديدات الرسمية (<span class="tech-term">STRIDE</span>) على نظام دعم عملاء متكامل مع قنوات متعددة.
+                </li>
+                <li>
+                    تعالج التحديات الأمنية الناشئة عن تكامل الذكاء الاصطناعي (مثل خطوط أنابيب <span class="tech-term">RAG</span>، وإدارة المفاتيح متعددة المزودين) ضمن سياق متعدد المستأجرين.
+                </li>
+            </ul>
+
+            <h2>1.5 Project Objectives</h2>
+            <p>
+                الأهداف الأساسية لهذا المشروع هي:
+            </p>
+            <ol>
+                <li>
+                    تصميم وتنفيذ بنية أمنية متعددة الطبقات (<span class="tech-term">defense-in-depth</span>) لمنصة دعم عملاء <span class="tech-term">SaaS</span> متعددة المستأجرين، مع ضوابط أمنية مفروضة عبر أربع طبقات مستقلة: البرمجيات الوسيطة (<span class="tech-term">middleware</span>)، حراس <span class="tech-term">API</span>، عزل المخططات (<span class="tech-term">schema isolation</span>)، وأمان على مستوى الصف في قاعدة البيانات (<span class="tech-term">RLS</span>).
+                </li>
+                <li>
+                    تحقيق عزل للمستأجرين على مستوى قاعدة البيانات من خلال بنية <span class="tech-term">PostgreSQL schema-per-tenant</span>، حيث يتلقى كل مستأجر مخططًا مخصصًا يحتوي على 84 جدولاً، و 29 مُحفِّزًا (<span class="tech-term">triggers</span>)، و 25 سياسة <span class="tech-term">RLS</span> — مما يوفر ضمانات عزل مستقلة عن سلوك طبقة التطبيق.
+                </li>
+                <li>
+                    تنفيذ نموذج تحكم في الوصول قائم على الأدوار (<span class="tech-term">RBAC</span>) من أربعة مستويات (<span class="tech-term">System Administrator</span>, <span class="tech-term">Support Manager</span>, <span class="tech-term">Support Agent</span>, <span class="tech-term">Customer</span>) يتم تطبيقه على كل من طبقة التطبيق (حراس البرمجيات الوسيطة، معالجات مسارات <span class="tech-term">API</span>) وطبقة قاعدة البيانات (سياسات <span class="tech-term">RLS</span> مع شروط قائمة على الأدوار).
+                </li>
+                <li>
+                    تطوير نموذج تهديدات متوافق مع <span class="tech-term">STRIDE</span> يحدد بشكل منهجي التهديدات الأمنية عبر جميع مكونات النظام، ومناطق الثقة، وتدفقات البيانات، ويربط كل تهديد بضوابط منفذة محددة مع تقييم للمخاطر المتبقية.
+                </li>
+                <li>
+                    تنفيذ تسجيل ومراقبة تدقيق شاملة مع تخزين سجلات غير قابلة للتغيير (لا توجد سياسات <span class="tech-term">UPDATE/DELETE</span>)، وأكثر من 51 مُحفِّزًا لقاعدة البيانات لتتبع التغييرات، وقدرات استعلام مفهرسة للتحليل الجنائي.
+                </li>
+                <li>
+                    التحقق من صحة البنية الأمنية في بيئة الإنتاج مع أكثر من 13 مستأجرًا حيًا، مما يثبت أن الضوابط الأمنية المنفذة تعمل بشكل صحيح في ظل ظروف العالم الحقيقي مع حركة مرور مستخدمين حقيقية.
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 8)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">8</footer>
+        <div class="page-content">
+            <h2>1.6 Scope and Limitations</h2>
+            
+            <h4>Scope</h4>
+            <p>
+                يشمل النطاق الأمني لهذا المشروع المجالات التالية:
+            </p>
+            <ul>
+                <li>
+                    <strong>Authentication and Session Management:</strong> مصادقة قائمة على <span class="tech-term">JWT</span> مع <span class="tech-term">PKCE</span>، مطالبات مستأجر مخصصة، إدارة جلسات مستمرة مع منع انتحال الهوية، وأمان ملفات تعريف الارتباط (<span class="tech-term">HTTP-only, Secure, SameSite</span>).
+                </li>
+                <li>
+                    <strong>Role-Based Access Control:</strong> نموذج <span class="tech-term">RBAC</span> من أربعة مستويات مفروض على مستوى البرمجيات الوسيطة، معالج <span class="tech-term">API</span>، وقاعدة البيانات (<span class="tech-term">RLS</span>).
+                </li>
+                <li>
+                    <strong>Multi-Tenant Data Isolation:</strong> بنية <span class="tech-term">Schema-per-tenant</span> في <span class="tech-term">PostgreSQL</span> مع أمان التزويد وتحديد نطاق <span class="tech-term">search_path</span>.
+                </li>
+                <li>
+                    <strong>Database Security:</strong> 58 سياسة <span class="tech-term">RLS</span> (33 عامة + 25 لكل مستأجر)، استعلامات مُعَدّة (<span class="tech-term">parameterized queries</span>)، وتخزين مشفر لبيانات الاعتماد عبر <span class="tech-term">Supabase Vault (AES-256)</span>.
+                </li>
+                <li>
+                    <strong>Network Security:</strong> تحديد معدل الطلبات (نافذة منزلقة قائمة على IP + دلو الرموز للدردشة)، قفل حساب تدريجي (تصعيد من 5 خطوات من 5 دقائق إلى 24 ساعة)، حماية <span class="tech-term">CSRF</span>، و7 ترويسات أمان بما في ذلك <span class="tech-term">CSP</span>، <span class="tech-term">HSTS</span>، و <span class="tech-term">X-Frame-Options</span>.
+                </li>
+                <li>
+                    <strong>Webhook Security:</strong> التحقق من التوقيع باستخدام <span class="tech-term">HMAC-SHA256</span> لجميع تكاملات قنوات المراسلة الخمس (<span class="tech-term">WhatsApp</span>، <span class="tech-term">Telegram</span>، <span class="tech-term">Instagram</span>، <span class="tech-term">Facebook Messenger</span>، <span class="tech-term">TikTok</span>).
+                </li>
+                <li>
+                    <strong>AI Security Controls:</strong> تخزين مفاتيح <span class="tech-term">API</span> المشفرة، خطوط أنابيب <span class="tech-term">RAG</span> معزولة للمستأجرين، تحديد طول المدخلات، قوائم حظر للمواضيع الممنوعة، وحصص استخدام للذكاء الاصطناعي لكل مستأجر.
+                </li>
+                <li>
+                    <strong>Audit Logging:</strong> جدول سجل تدقيق غير قابل للتغيير مع 8 فهارس أداء، تتبع التغييرات المستند إلى مُحفِّزات قاعدة البيانات، واسترجاع مُقسم للصفحات مع تحكم في الوصول قائم على الأدوار.
+                </li>
+            </ul>
+
+            <h4>Limitations</h4>
+            <ul>
+                <li>
+                    لم يتم إجراء اختبار اختراق من طرف ثالث بواسطة فريق أمني معتمد. يعتمد التحقق من الأمان على الاختبار الداخلي وتحليل نموذج التهديد.
+                </li>
+                <li>
+                    <strong>In-memory rate limiting:</strong> محددات المعدل الحالية وآليات قفل الحساب تستخدم مخازن في الذاكرة، وهي غير مشتركة عبر مثيلات الوظائف عديمة الخادم (<span class="tech-term">serverless</span>).
+                </li>
+                <li>
+                    <strong>No Multi-Factor Authentication (MFA):</strong> نظام المصادقة الحالي لا يطبق المصادقة متعددة العوامل لأي دور مستخدم.
+                </li>
+                <li>
+                    لا يوجد فحص تلقائي للثغرات مدمج في خط أنابيب التكامل والنشر المستمر (<span class="tech-term">CI/CD</span>).
+                </li>
+            </ul>
+
+            <p class="chapter-outro">
+                بعد تحديد المشكلة، الدوافع، والنطاق، يستعرض القسم التالي المنهجية المتبعة في تطوير وتقييم هذه البنية الأمنية.
+            </p>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 9)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">9</footer>
+        <div class="page-content">
+            <h2>1.7 Methodology Overview</h2>
+            <p>
+                يتبع هذا المشروع منهجية تطوير قائمة على الأمن (<span class="tech-term">security-driven development</span>)، حيث توجه الاعتبارات الأمنية القرارات المعمارية منذ مرحلة التصميم الأولى بدلاً من تطبيقها كترقيعات بعد التنفيذ.
+            </p>
+
+            <h4>Development Approach</h4>
+            <p>
+                تتقدم منهجية التطوير عبر أربع مراحل تكرارية:
+            </p>
+            <p>
+                <strong>Phase 1 — Threat Model First (Month 1):</strong> قبل كتابة أي كود تطبيقي، تم تحليل بنية النظام باستخدام إطار <span class="tech-term">STRIDE</span> لتحديد التهديدات المحتملة عند كل حد من حدود الثقة. هذا التحليل أثر بشكل مباشر على اختيار عزل المخططات لكل مستأجر في <span class="tech-term">PostgreSQL</span> بدلاً من البنية متعددة المستأجرين القائمة على الجداول المشتركة، وعلى قرار فرض التحكم في الوصول على أربع طبقات مستقلة.
+            </p>
+            <p>
+                <strong>Phase 2 — Architecture and Core Security (Months 1–2):</strong> تم تنفيذ البنية التحتية الأمنية الأساسية: نظام المصادقة (باستخدام <span class="tech-term">Supabase Auth</span> + مطالبات <span class="tech-term">JWT</span> مخصصة)، تصميم المخططات متعددة المستأجرين مع التزويد الآلي، نموذج <span class="tech-term">RBAC</span> على طبقات البرمجيات الوسيطة و<span class="tech-term">API</span>، والإطار الأولي لسياسات <span class="tech-term">RLS</span>.
+            </p>
+            <p>
+                <strong>Phase 3 — Feature Implementation with Security Integration (Months 1–2):</strong> تم تطوير ميزات العمل (الرسائل متعددة القنوات، روبوت الدردشة بالذكاء الاصطناعي، إدارة التذاكر) مع دمج الضوابط الأمنية منذ البداية. كل تكامل لقناة مراسلة تضمن التحقق من <span class="tech-term">HMAC webhook</span>. وتضمن تكامل الذكاء الاصطناعي خطوط أنابيب <span class="tech-term">RAG</span> معزولة للمستأجرين وتخزينًا مشفرًا للمفاتيح.
+            </p>
+            <p>
+                <strong>Phase 4 — Hardening and Production Validation (Months 2–3):</strong> تم تطبيق إجراءات التقوية الأمنية: تحديد معدل الطلبات، قفل الحساب التدريجي، حماية <span class="tech-term">CSRF</span>، تسجيل تدقيق شامل (أكثر من 51 مُحفِّزًا)، ترويسات <span class="tech-term">CSP</span>، والتقييم الكامل لنموذج التهديد <span class="tech-term">STRIDE</span>. تم نشر النظام في بيئة الإنتاج مع أكثر من 13 مستأجرًا حيًا للتحقق من صحته في العالم الحقيقي.
+            </p>
+
+            <figure>
+                <img src="2.png" alt="مخطط زمني يوضح مراحل منهجية التطوير الموجه بالأمان">
+                <figcaption>
+                    <span class="figure-title">Figure 1.2: Security-by-Design development methodology</span>
+                    <br>
+                    يوضح هذا المخطط الزمني منهجية التطوير المتبعة في المشروع، والتي تمتد على مدار 7 أشهر. تبدأ المنهجية بمرحلة نمذجة التهديدات (Threat Modeling) قبل أي تطوير برمجي، تليها بناء البنية الأساسية للأمان، ثم تطوير الميزات مع دمج الأمن، وأخيرًا مرحلة التقوية والتحقق في بيئة الإنتاج. هذا النهج يضمن أن الأمن جزء لا يتجزأ من التصميم وليس مجرد إضافة.
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 1: Introduction - Content (Page 10)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">10</footer>
+        <div class="page-content">
+            <h4>Security Evaluation Framework</h4>
+            <p>
+                يتم تقييم البنية الأمنية وفقًا لثلاثة أطر عمل تكميلية:
+            </p>
+            <ol>
+                <li>
+                    <strong>STRIDE Threat Model:</strong> تم تحليل جميع فئات التهديدات الست عبر أربع مناطق ثقة، مع ربط الضوابط وتقييم المخاطر المتبقية.
+                </li>
+                <li>
+                    <strong>OWASP Top 10 (2021):</strong> تم ربط كل فئة من فئات المخاطر العشر بضوابط أمنية محددة في تطبيق <span class="tech-term">HSA</span>.
+                </li>
+                <li>
+                    <strong>Defense-in-Depth Validation:</strong> إثبات أن كل مسار بيانات حرج يمر عبر طبقات إنفاذ أمنية متعددة ومستقلة.
+                </li>
+            </ol>
+            
+            <p class="chapter-outro">
+                بهذا يختتم الفصل الأول، الذي قدم نظرة شاملة على المشكلة، وأهداف المشروع، ومنهجية العمل. الفصل التالي سيغوص أعمق في الأدبيات الأكاديمية والممارسات الصناعية التي شكلت أساس القرارات المعمارية في هذا المشروع.
+            </p>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 2: Literature Review - Title Page (Page 11)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">11</footer>
+        <div class="page-content cover-page">
+            <h1>Chapter 2<br>Literature Review</h1>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 12)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">12</footer>
+        <div class="page-content">
+            <p class="chapter-intro">
+                يستعرض هذا الفصل الأبحاث والممارسات الصناعية الحالية المتعلقة بأمن الأنظمة متعددة المستأجرين، مما يوفر الأساس النظري للقرارات التصميمية التي تم اتخاذها في المشروع.
+            </p>
+
+            <h2>2.1 Multi-Tenant Security Models</h2>
+
+            <h3>2.1.1 Multi-Tenancy Isolation Approaches</h3>
+            <p>
+                تُعد البنية متعددة المستأجرين (<span class="tech-term">Multi-tenancy</span>) نمطًا معماريًا أساسيًا في أنظمة <span class="tech-term">SaaS</span> المستندة إلى السحابة، حيث تُمكّن نسخة برمجية واحدة من خدمة عدة عملاء من المؤسسات (المستأجرين). حدد بيزيمر وزيدمان [10] ثلاثة أساليب أساسية لعزل بيانات المستأجرين، يقدم كل منها مقايضات أمنية مميزة:
+            </p>
+
+            <table>
+                <caption>Table 2.1: Comparison of Multi-Tenancy Models in SaaS Architectures</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Approach</th>
+                        <th lang="en">Isolation Strength</th>
+                        <th lang="en">Operational Cost</th>
+                        <th lang="en">Resource Efficiency</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td lang="en">Shared tables (tenant_id column)</td>
+                        <td lang="en">Low</td>
+                        <td lang="en">Low</td>
+                        <td lang="en">High</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Schema-per-tenant</td>
+                        <td lang="en">High</td>
+                        <td lang="en">Moderate</td>
+                        <td lang="en">Moderate</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Database-per-tenant</td>
+                        <td lang="en">Highest</td>
+                        <td lang="en">High</td>
+                        <td lang="en">Low</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                نموذج الجداول المشتركة (<span class="tech-term">Shared-table multi-tenancy</span>)، الذي تستخدمه معظم منصات <span class="tech-term">SaaS</span> التجارية بما في ذلك <span class="tech-term">Zendesk</span> و <span class="tech-term">Freshdesk</span>، يقوم بتخزين بيانات جميع المستأجرين في نفس جداول قاعدة البيانات مع تمييزها بواسطة عمود <span class="tech-term">tenant_id</span>. على الرغم من كفاءته التشغيلية، لا يوفر هذا النهج أي ضمان للعزل على مستوى قاعدة البيانات. يمكن أن يؤدي حذف عبارة <span class="tech-term">WHERE</span>، أو وجود ثغرة حقن <span class="tech-term">SQL</span>، أو خطأ في تكوين <span class="tech-term">ORM</span> إلى كشف بيانات مستأجر لآخر. أظهر كريبس وآخرون [11] أنه في أنظمة الجداول المشتركة، يمكن لثغرة حقن واحدة أن تخترق جميع المستأجرين في وقت واحد — وهي مشكلة تُعرف بـ "نصف قطر الانفجار" (<span class="tech-term">blast radius</span>) والتي لا توجد في البنى المعزولة بالمخططات.
+            </p>
+            <p>
+                نموذج العزل لكل مستأجر بمخطط (<span class="tech-term">Schema-per-tenant isolation</span>) يخصص لكل مستأجر مخطط قاعدة بيانات (<span class="tech-term">schema</span>) مخصص داخل قاعدة بيانات مشتركة. يوفر هذا النهج، الذي وصفه أولباخ وآخرون [12]، عزلًا منطقيًا قويًا لأن كائنات قاعدة البيانات (الجداول، الفهارس، المُحفِّزات، الدوال) توجد بشكل مستقل في كل مخطط. تُمكّن آلية <span class="tech-term">search_path</span> في <span class="tech-term">PostgreSQL</span> من توجيه المخطط بشفافية عن طريق تعيين <span class="tech-term">SET search_path = tenant_&lt;name&gt;</span> على مستوى الاتصال، مما يضمن أن جميع الاستعلامات اللاحقة يتم تحديد نطاقها تلقائيًا للمستأجر الصحيح دون الحاجة إلى تصفية على مستوى التطبيق.
+            </p>
+            <p>
+                يوفر العزل لكل مستأجر بقاعدة بيانات (<span class="tech-term">Database-per-tenant isolation</span>) أقوى حدود أمان ولكنه يترتب عليه عبء تشغيلي كبير في التزويد والصيانة وتجميع الاتصالات وترحيل المخططات. جادل جاكوبس وأولباخ [13] بأن هذا النهج يصبح غير عملي بعد حوالي 50 مستأجرًا بسبب تكاليف إدارة الاتصالات ومزامنة الترحيل.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 13)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">13</footer>
+        <div class="page-content">
+            <h3>2.1.2 PostgreSQL Row-Level Security</h3>
+            <p>
+                قدمت <span class="tech-term">PostgreSQL</span> ميزة الأمان على مستوى الصف (<span class="tech-term">Row-Level Security - RLS</span>) في الإصدار 9.5، مما يتيح التحكم الدقيق في الوصول على مستوى الصف [14]. تحدد سياسات <span class="tech-term">RLS</span> الشروط التي بموجبها يمكن للمستخدم تنفيذ عمليات <span class="tech-term">SELECT</span>، <span class="tech-term">INSERT</span>، <span class="tech-term">UPDATE</span>، أو <span class="tech-term">DELETE</span> على صفوف فردية، مما يوفر طبقة إنفاذ ثانية مستقلة عن التطبيق.
+            </p>
+            <p>
+                في الأنظمة متعددة المستأجرين، تعمل <span class="tech-term">RLS</span> إما كآلية عزل أساسية (في نموذج الجداول المشتركة) أو كطبقة دفاع ثانوية (في نموذج المخطط لكل مستأجر). عند استخدامها كآلية عزل وحيدة، تكون سياسات <span class="tech-term">RLS</span> حاسمة: أي سياسة خاطئة التكوين أو مفقودة تؤدي مباشرة إلى كشف البيانات بين المستأجرين. عند دمجها مع عزل المخططات، كما هو الحال في <span class="tech-term">HSA</span>، توفر <span class="tech-term">RLS</span> دفاعًا في العمق — حتى لو فشل توجيه المخطط، تمنع سياسات مستوى الصف الوصول غير المصرح به بشكل مستقل.
+            </p>
+            <p>
+                أكد فيرايولو وآخرون [15] أن سياسات التحكم في الوصول المفروضة على مستوى قاعدة البيانات أفضل من السياسات المفروضة على مستوى التطبيق لأنها تعمل على مستوى ثقة أقل ولا يمكن تجاوزها بواسطة الثغرات في طبقة التطبيق.
+            </p>
+
+            <h3>2.1.3 Security Comparison of Isolation Models</h3>
+            
+            <table>
+                <caption>Table 2.2: Security Risks in Shared-Table Model</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Security Property</th>
+                        <th lang="en">Shared Table</th>
+                        <th lang="en">Schema-per-Tenant</th>
+                        <th lang="en">DB-per-Tenant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td lang="en">SQL injection blast radius</td>
+                        <td lang="en">All tenants</td>
+                        <td lang="en">Single tenant</td>
+                        <td lang="en">Single tenant</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">RLS dependency (critical?)</td>
+                        <td lang="en">Yes (sole barrier)</td>
+                        <td lang="en">No (secondary layer)</td>
+                        <td lang="en">No (not needed)</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Cross-tenant query prevention</td>
+                        <td lang="en">Application-only</td>
+                        <td lang="en">Database schema boundary</td>
+                        <td lang="en">Database boundary</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Per-tenant backup/restore</td>
+                        <td lang="en">Impossible</td>
+                        <td lang="en">Schema-level export</td>
+                        <td lang="en">Full DB export</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Index isolation</td>
+                        <td lang="en">Shared indexes</td>
+                        <td lang="en">Per-schema indexes</td>
+                        <td lang="en">Full isolation</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Info leakage via statistics</td>
+                        <td lang="en">Possible</td>
+                        <td lang="en">Isolated stats</td>
+                        <td lang="en">Full isolation</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>
+                يوضح هذا التحليل أن عزل المخططات لكل مستأجر يوفر النسبة المثلى بين الأمان والتكلفة لمنصات <span class="tech-term">SaaS</span> الإنتاجية التي تتطلب عزلًا قويًا للمستأجرين دون التعقيد التشغيلي لإدارة قاعدة بيانات لكل مستأجر [12].
+            </p>
+        </div>
+    </section>
+
+<!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 14)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">14</footer>
+        <div class="page-content">
+            <h2>2.2 Authentication and Authorization in SaaS</h2>
+
+            <h3>2.2.1 JWT-Based Authentication</h3>
+            <p>
+                أصبحت رموز الويب JSON (<span class="tech-term">JSON Web Tokens - JWT</span>) المعيار الفعلي للمصادقة في تطبيقات الويب الحديثة [16]. تقوم رموز <span class="tech-term">JWT</span> بتشفير هوية المستخدم والمطالبات (<span class="tech-term">claims</span>) في رمز مميز وموقع تشفيريًا، مما يتيح مصادقة عديمة الحالة (<span class="tech-term">stateless authentication</span>) دون الحاجة إلى تخزين الجلسات من جانب الخادم. في سياق <span class="tech-term">SaaS</span> متعدد المستأجرين، يمكن لرموز <span class="tech-term">JWT</span> حمل مطالبات خاصة بالمستأجر (مثل <span class="tech-term">tenant_id</span>، <span class="tech-term">tenant_role</span>) تمكّن الخادم من تحديد هوية المستخدم وسياقه التنظيمي من رمز واحد.
+            </p>
+            <p>
+                ومع ذلك، تقدم الأنظمة القائمة على <span class="tech-term">JWT</span> مخاطر أمنية محددة:
+            </p>
+            <ul>
+                <li>
+                    <strong>Token theft:</strong> إذا تم اعتراض <span class="tech-term">JWT</span>، يمكن للمهاجم انتحال هوية المستخدم طوال فترة صلاحية الرمز. تتطلب إجراءات التخفيف فترات صلاحية قصيرة للرموز مع آليات تحديث آمنة [17].
+                </li>
+                <li>
+                    <strong>Claims tampering:</strong> بينما يمنع توقيع <span class="tech-term">JWT</span> التعديل المباشر، يجب على النظام التحقق من أن المطالبات المخصصة نشأت من المصدر الموثوق ولم يتم حقنها من قبل العميل.
+                </li>
+                <li>
+                    <strong>Algorithm confusion attacks:</strong> إذا لم يفرض التحقق من الرمز خوارزمية محددة (مثل <span class="tech-term">RS256</span>)، فقد يستغل المهاجم ثغرات تبديل الخوارزميات [18].
+                </li>
+            </ul>
+            <p>
+                يعالج بروتوكول <span class="tech-term">OAuth 2.0</span> مع امتداد مفتاح الإثبات لتبادل الرموز (<span class="tech-term">Proof Key for Code Exchange - PKCE</span>) [19] العديد من هذه المخاوف عن طريق إزالة تعرض رموز الترخيص أثناء تدفق المصادقة، مما يجعله مناسبًا للعملاء العامين مثل تطبيقات الصفحة الواحدة.
+            </p>
+            
+            <h3>2.2.2 Role-Based Access Control (RBAC)</h3>
+            <p>
+                يعرّف معيار <span class="tech-term">RBAC</span> الصادر عن المعهد الوطني للمعايير والتكنولوجيا (<span class="tech-term">NIST</span>) [20] نموذجًا هرميًا حيث يتم تعيين الأذونات للأدوار، ويتم تعيين المستخدمين للأدوار. في سياق متعدد المستأجرين، يجب أن يكون <span class="tech-term">RBAC</span> محدد النطاق بالمستأجر — فدور المستخدم في المستأجر "أ" لا يؤثر على وصوله في المستأجر "ب".
+            </p>
+            <p>
+                يمكن أن يحدث إنفاذ <span class="tech-term">RBAC</span> على عدة طبقات معمارية:
+            </p>
+            <ol>
+                <li>
+                    <strong>Middleware layer:</strong> فحوصات ما قبل الطلب تتحقق من دور المستخدم قبل توجيهه إلى معالج الطلب.
+                </li>
+                <li>
+                    <strong>API handler layer:</strong> ترخيص لكل نقطة نهاية يتحقق مما إذا كان دور المستخدم يسمح بالعملية المحددة.
+                </li>
+                <li>
+                    <strong>Database layer:</strong> سياسات <span class="tech-term">RLS</span> التي تفرض شروطًا قائمة على الأدوار على كل استعلام <span class="tech-term">SQL</span> بغض النظر عن كيفية بدئه.
+                </li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 15)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">15</footer>
+        <div class="page-content">
+            <p>
+                جادل ساندو وآخرون [21] بأن إنفاذ <span class="tech-term">RBAC</span> متعدد الطبقات (فرض الأدوار على كل من طبقات التطبيق وقاعدة البيانات) يوفر أمانًا فائقًا مقارنة بالإنفاذ أحادي الطبقة لأن كل طبقة تعمل بافتراضات ثقة مستقلة.
+            </p>
+
+            <h3>2.2.3 Session Management Security</h3>
+            <p>
+                توصي إرشادات إدارة الجلسات من <span class="tech-term">OWASP</span> [22] بالعديد من أفضل الممارسات لأمن الجلسات:
+            </p>
+            <ul>
+                <li>
+                    <strong>Session ID entropy:</strong> ما لا يقل عن 128 بت من العشوائية لمنع تخمين الجلسات بالقوة الغاشمة (<span class="tech-term">brute-force</span>).
+                </li>
+                <li>
+                    <strong>Secure cookie attributes:</strong> <span class="tech-term">HTTP-only</span> (يمنع الوصول عبر <span class="tech-term">JavaScript</span>)، <span class="tech-term">Secure</span> (لـ <span class="tech-term">HTTPS</span> فقط)، <span class="tech-term">SameSite</span> (يمنع <span class="tech-term">CSRF</span>).
+                </li>
+                <li>
+                    <strong>Session expiration:</strong> مهلات زمنية مطلقة للجلسات غير النشطة، مع مدة قابلة للتكوين.
+                </li>
+                <li>
+                    <strong>Device tracking:</strong> تسجيل بيانات وصفية للجهاز (عنوان <span class="tech-term">IP</span>، وكيل المستخدم) في سجلات تدقيق الجلسة.
+                </li>
+            </ul>
+            <p>
+                في الأنظمة متعددة المستأجرين، يجب على إدارة الجلسات أن تضمن بالإضافة إلى ذلك أن رمز جلسة صادر لمستأجر واحد لا يمكن إعادة استخدامه للوصول إلى موارد مستأجر آخر — وهو شرط لا تفرضه أطر إدارة الجلسات القياسية بطبيعتها.
+            </p>
+
+            <h2>2.3 Database Security</h2>
+
+            <h3>2.3.1 SQL Injection Prevention</h3>
+            <p>
+                لا يزال حقن <span class="tech-term">SQL</span> ثالث أخطر خطر أمني لتطبيقات الويب في قائمة <span class="tech-term">OWASP Top 10 (2021)</span> [6]. في قواعد البيانات متعددة المستأجرين، يتضاعف تأثير حقن <span class="tech-term">SQL</span> لأن حقنة واحدة ناجحة يمكن أن تصل إلى بيانات جميع المستأجرين في وقت واحد.
+            </p>
+            <p>
+                الاستعلامات المُعَدّة (<span class="tech-term">Parameterized queries</span>) أو (<span class="tech-term">prepared statements</span>) هي الدفاع الأساسي ضد حقن <span class="tech-term">SQL</span> [23]. تستخدم مكتبات عملاء قواعد البيانات الحديثة، بما في ذلك <span class="tech-term">Supabase JavaScript SDK</span>، حصريًا استعلامات مُعَدّة، مما يلغي خطر الحقن من خلال استخدام <span class="tech-term">API</span> القياسي. ومع ذلك، يجب تدقيق التطبيقات التي تبني استعلامات <span class="tech-term">SQL</span> ديناميكية (على سبيل المثال، للبحث أو التصفية أو العمليات الإدارية) بعناية فائقة.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 16)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">16</footer>
+        <div class="page-content">
+            <h3>2.3.2 Audit Logging Patterns</h3>
+            <p>
+                يُعد تسجيل التدقيق الشامل مطلبًا أساسيًا لأطر الامتثال الأمني بما في ذلك <span class="tech-term">SOC 2</span>، <span class="tech-term">ISO 27001</span>، و <span class="tech-term">GDPR</span> [24]. يتبع تسجيل التدقيق الفعال في أنظمة قواعد البيانات عادةً أحد ثلاثة أنماط تنفيذ:
+            </p>
+            <ol>
+                <li>
+                    <strong>Application-level logging:</strong> يسجل التطبيق الإجراءات في جداول السجلات. هذا النهج بسيط ولكن يمكن تجاوزه إذا تم الوصول المباشر إلى قاعدة البيانات.
+                </li>
+                <li>
+                    <strong>Database trigger-based logging:</strong> تعمل مُحفِّزات <span class="tech-term">PostgreSQL</span> تلقائيًا عند عمليات <span class="tech-term">INSERT</span>، <span class="tech-term">UPDATE</span>، أو <span class="tech-term">DELETE</span>، وتلتقط التغييرات بغض النظر عن كيفية بدئها.
+                </li>
+                <li>
+                    <strong>Write-Ahead Log (WAL) analysis:</strong> يلتقط سجل <span class="tech-term">WAL</span> في <span class="tech-term">PostgreSQL</span> جميع تغييرات قاعدة البيانات على أدنى مستوى، مما يوفر مسار تدقيق أكثر اكتمالاً ولكنه يتطلب أدوات متخصصة.
+                </li>
+            </ol>
+            <p>
+                يقدم التسجيل المستند إلى مُحفِّزات قاعدة البيانات التوازن الأمثل: فهو يلتقط جميع التغييرات التي تبدأ من أي مسار (التطبيق، دوال الحافة، <span class="tech-term">SQL</span> مباشر، أو وظيفة خلفية)، ويوفر تفاصيل كافية للتحليل الجنائي، ويمكن تحديد نطاقه لجداول وعمليات محددة [25].
+            </p>
+
+            <h3>2.3.3 Immutable Audit Logs</h3>
+            <p>
+                تعتمد سلامة سجلات التدقيق على عدم قابليتها للتغيير — بمجرد كتابتها، يجب ألا تكون إدخالات السجل قابلة للتعديل أو الحذف. تم إضفاء الطابع الرسمي على هذا المبدأ في نموذج سلامة كلارك-ويلسون [26]، والذي يتطلب الحفاظ على سجلات التدقيق بطريقة الإلحاق فقط (<span class="tech-term">append-only</span>).
+            </p>
+            <p>
+                في <span class="tech-term">PostgreSQL</span>، يمكن فرض عدم القابلية للتغيير من خلال:
+            </p>
+            <ul>
+                <li>
+                    <strong>RLS policies:</strong> السماح فقط بعمليات <span class="tech-term">INSERT</span> و <span class="tech-term">SELECT</span> على جدول التدقيق (لا توجد سياسات <span class="tech-term">UPDATE</span> أو <span class="tech-term">DELETE</span>).
+                </li>
+                <li>
+                    <strong>Database triggers:</strong> مُحفِّز <span class="tech-term">BEFORE DELETE</span> يثير استثناءً لمنع حذف السجلات.
+                </li>
+                <li>
+                    <strong>Privilege restriction:</strong> منح امتيازات <span class="tech-term">INSERT</span> و <span class="tech-term">SELECT</span> فقط لجميع الأدوار باستثناء المستخدم الخارق (<span class="tech-term">superuser</span>).
+                </li>
+            </ul>
+        </div>
+    </section>
+
+<!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 17)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">17</footer>
+        <div class="page-content">
+            <h2>2.4 Web Application Security (OWASP)</h2>
+
+            <h3>2.4.1 OWASP Top 10 in Multi-Tenant Context</h3>
+            <p>
+                تحدد قائمة <span class="tech-term">OWASP Top 10 (2021)</span> [6] أهم المخاطر الأمنية الحرجة لتطبيقات الويب. في سياق <span class="tech-term">SaaS</span> متعدد المستأجرين، تكتسب العديد من الفئات أهمية مضاعفة:
+            </p>
+
+            <table>
+                <caption>Table 2.3: OWASP Top 10 Security Mapping (Multi-Tenant SaaS Context)</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">OWASP Category</th>
+                        <th lang="en">Standard Risk</th>
+                        <th lang="en">Multi-Tenant Amplification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td lang="en">A01: Broken Access Control</td>
+                        <td lang="en">Single-user escalation</td>
+                        <td lang="en">Cross-tenant data exposure</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">A02: Cryptographic Failures</td>
+                        <td lang="en">Single-user data exposure</td>
+                        <td lang="en">Cross-tenant credential leakage</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">A03: Injection</td>
+                        <td lang="en">Single-database compromise</td>
+                        <td lang="en">All-tenant simultaneous compromise</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">A05: Security Misconfiguration</td>
+                        <td lang="en">Single-server impact</td>
+                        <td lang="en">Platform-wide impact across all tenants</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">A07: Auth Failures</td>
+                        <td lang="en">Single-account compromise</td>
+                        <td lang="en">Tenant-wide or platform-wide compromise</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">A09: Logging Failures</td>
+                        <td lang="en">Limited forensics</td>
+                        <td lang="en">Cross-tenant incident investigation gaps</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>2.4.2 Content Security Policy (CSP)</h3>
+            <p>
+                سياسة أمان المحتوى (<span class="tech-term">Content Security Policy - CSP</span>) هي آلية أمان يفرضها المتصفح وتخفف من هجمات البرمجة النصية عبر المواقع (<span class="tech-term">Cross-Site Scripting - XSS</span>) عن طريق تقييد المصادر التي يمكن للصفحة تحميل الموارد منها [27]. تحدد ترويسات <span class="tech-term">CSP</span> الأصول المسموح بها للنصوص البرمجية والأنماط والصور والخطوط وأنواع الموارد الأخرى. إن سياسة <span class="tech-term">CSP</span> الصارمة — التي لا تسمح بالنصوص البرمجية المضمنة (<span class="tech-term">inline scripts</span>) وتقصر مصادر النصوص البرمجية على أصل التطبيق الخاص وشبكات توصيل المحتوى (<span class="tech-term">CDNs</span>) الموثوقة — تقلل بشكل كبير من سطح هجوم <span class="tech-term">XSS</span>.
+            </p>
+
+            <h3>2.4.3 Rate Limiting and Brute-Force Protection</h3>
+            <p>
+                يُعد تحديد معدل الطلبات (<span class="tech-term">Rate limiting</span>) دفاعًا حاسمًا ضد هجمات حشو بيانات الاعتماد (<span class="tech-term">credential stuffing</span>)، وهجمات القوة الغاشمة على كلمات المرور، ومحاولات رفض الخدمة (<span class="tech-term">Denial-of-Service - DoS</span>) [28]. توجد خوارزميتان شائعتان لتحديد معدل الطلبات:
+            </p>
+            <ul>
+                <li>
+                    <strong>Sliding window counters:</strong> تتبع عدد الطلبات في نافذة زمنية متجددة. سهلة التنفيذ ولكن يمكن التحايل عليها بتوزيع الطلبات تمامًا تحت العتبة.
+                </li>
+                <li>
+                    <strong>Token bucket:</strong> يتلقى كل عميل دلوًا بسعة ثابتة يتم إعادة تعبئته بمعدل ثابت. يسمح بحركة المرور المفاجئة (<span class="tech-term">burst traffic</span>) مع فرض حدود معدل طويلة الأجل.
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 18)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">18</footer>
+        <div class="page-content">
+            <p>
+                تكمل آليات قفل الحسابات تحديد معدل الطلبات عن طريق تعطيل الحسابات مؤقتًا أو دائمًا بعد تجاوز عتبة محاولات المصادقة الفاشلة. القفل التدريجي (<span class="tech-term">Progressive lockout</span>) — حيث تزداد مدة القفل مع كل حدث قفل لاحق — يوفر توازنًا بين الأمان وتجربة المستخدم [29].
+            </p>
+
+            <h2>2.5 Threat Modeling Frameworks</h2>
+
+            <h3>2.5.1 Comparison of Frameworks</h3>
+            <p>
+                تُستخدم ثلاثة أطر أساسية لنمذجة التهديدات على نطاق واسع في أمن البرمجيات:
+            </p>
+            
+            <table>
+                <caption>Table 2.4: Threat Modeling Frameworks</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Framework</th>
+                        <th lang="en">Focus</th>
+                        <th lang="en">Strengths</th>
+                        <th lang="en">Weaknesses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td lang="en">STRIDE</td>
+                        <td lang="en">Threats (what can go wrong)</td>
+                        <td lang="en">Comprehensive coverage, well-documented</td>
+                        <td lang="en">Does not prioritize by impact</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">DREAD</td>
+                        <td lang="en">Risk rating (how bad is it)</td>
+                        <td lang="en">Quantitative risk scoring</td>
+                        <td lang="en">Subjective scoring criteria</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">PASTA</td>
+                        <td lang="en">Risk-centric (business impact)</td>
+                        <td lang="en">Aligns with business objectives</td>
+                        <td lang="en">Complex, requires extensive documentation</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.5.2 STRIDE in Depth</h3>
+            <p>
+                يصنف نموذج <span class="tech-term">STRIDE</span>، الذي طوره بريريت جارج ولورين كوهنفيلدر في مايكروسوفت [30]، التهديدات إلى ستة أنواع:
+            </p>
+            <ul>
+                <li><strong>Spoofing:</strong> انتهاك المصادقة — انتحال هوية مستخدم أو نظام.</li>
+                <li><strong>Tampering:</strong> انتهاك السلامة — تعديل غير مصرح به للبيانات.</li>
+                <li><strong>Repudiation:</strong> انتهاك عدم الإنكار — إنكار إجراء دون وجود دليل.</li>
+                <li><strong>Information Disclosure:</strong> انتهاك السرية — وصول غير مصرح به للبيانات.</li>
+                <li><strong>Denial of Service:</strong> انتهاك التوافر — جعل النظام غير متاح.</li>
+                <li><strong>Elevation of Privilege:</strong> انتهاك التفويض — الحصول على مستويات وصول غير مصرح بها.</li>
+            </ul>
+            <p>
+                يتم تطبيق <span class="tech-term">STRIDE</span> عن طريق تفكيك النظام إلى مكونات (عمليات، مخازن بيانات، تدفقات بيانات، حدود ثقة) وتقييم كل مكون بشكل منهجي مقابل فئات التهديدات الست جميعها. يضمن هذا النهج المنظم عدم إغفال أي فئة من فئات التهديدات، وهو أمر مهم بشكل خاص في الأنظمة المعقدة متعددة المستأجرين ذات حدود الثقة المتعددة [31].
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 19)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">19</footer>
+        <div class="page-content">
+            <p>
+                تم اختيار <span class="tech-term">STRIDE</span> لهذا المشروع لأنه يوفر تغطية شاملة للتهديدات عبر جميع مكونات النظام وينتج نتائج قابلة للتنفيذ ترتبط مباشرة بضوابط أمنية محددة.
+            </p>
+            
+            <h2>2.6 AI Security Considerations</h2>
+            
+            <h3>2.6.1 Prompt Injection Attacks</h3>
+            <p>
+                يُعد حقن الأوامر (<span class="tech-term">Prompt injection</span>) ناقل هجوم ناشئ وفريد من نوعه للأنظمة التي تدمج نماذج اللغة الكبيرة (<span class="tech-term">LLMs</span>) [32]. في هجوم حقن الأوامر، يصيغ المهاجم نص إدخال يتلاعب بسلوك النموذج اللغوي، مما يدفعه إلى تجاهل تعليمات النظام، أو الكشف عن الأوامر الداخلية، أو إنتاج مخرجات ضارة. في سياق <span class="tech-term">SaaS</span> متعدد المستأجرين، تشمل مخاطر حقن الأوامر ما يلي:
+            </p>
+            <ul>
+                <li>
+                    <strong>System prompt extraction:</strong> يخدع المهاجم الذكاء الاصطناعي للكشف عن أمر النظام، الذي قد يحتوي على منطق عمل أو تعليمات خاصة بالمستأجر.
+                </li>
+                <li>
+                    <strong>Cross-tenant data leakage:</strong> إذا استرجع خط أنابيب <span class="tech-term">RAG</span> بشكل غير صحيح مستندات من قاعدة معارف مستأجر آخر، فقد يدمج الذكاء الاصطناعي تلك البيانات في استجابته.
+                </li>
+                <li>
+                    <strong>Instruction override:</strong> يتجاوز المهاجم شخصية الذكاء الاصطناعي أو إرشادات السلامة، مما يجعله يولد استجابات ضارة أو غير متوافقة مع العلامة التجارية.
+                </li>
+            </ul>
+            <p>
+                تشمل استراتيجيات التخفيف تنقية المدخلات، وتصفية المخرجات، وتقوية أمر النظام، والعزل الصارم للمستأجرين في خط أنابيب استرجاع <span class="tech-term">RAG</span> [33].
+            </p>
+            
+            <h3>2.6.2 RAG Pipeline Security</h3>
+            <p>
+                تعمل تقنية التوليد المعزز بالاسترجاع (<span class="tech-term">Retrieval-Augmented Generation - RAG</span>)، التي قدمها لويس وآخرون [34]، على تحسين استجابات النماذج اللغوية الكبيرة من خلال إسنادها إلى مستندات مسترجعة. في نظام متعدد المستأجرين، يجب أن يفرض خط أنابيب <span class="tech-term">RAG</span> عزل المستأجر في مرحلة الاسترجاع — مما يضمن أن عمليات البحث عن تشابه المتجهات (<span class="tech-term">vector similarity searches</span>) تقتصر على قاعدة معارف المستأجر الطالب فقط. يشكل الفشل في فرض هذا العزل ثغرة في كشف المعلومات.
+            </p>
+
+            <h3>2.6.3 API Key Management for AI Providers</h3>
+            <p>
+                تواجه المنصات متعددة المستأجرين التي تسمح للمستأجرين بتكوين بيانات اعتماد مزود الذكاء الاصطناعي الخاصة بهم تحديًا في تخزين بيانات الاعتماد. يجب تخزين مفاتيح <span class="tech-term">API</span> بشكل آمن (مشفرة في حالة السكون)، وألا يتم كشفها أبدًا لكود جانب العميل، وأن تكون متاحة فقط للعمليات المصرح بها من جانب الخادم. توفر وحدات أمان الأجهزة (<span class="tech-term">HSMs</span>) أو خدمات التشفير القائمة على الخزائن (<span class="tech-term">vault-based</span>) أقوى ضمانات لتخزين بيانات الاعتماد [35].
+            </p>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 20)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">20</footer>
+        <div class="page-content">
+            <h2>2.7 Security Monitoring and Audit Logging</h2>
+
+            <h3>2.7.1 Audit Log Architectures</h3>
+            <p>
+                تتطلب المراقبة الأمنية في منصات <span class="tech-term">SaaS</span> تسجيلًا شاملاً للأحداث ذات الصلة بالأمن. تلتقط بنى سجلات التدقيق الفعالة البيانات الوصفية التالية لكل حدث [24]:
+            </p>
+            <ul>
+                <li><strong>Who:</strong> المستخدم الموثوق الذي قام بالإجراء.</li>
+                <li><strong>What:</strong> الإجراء المحدد الذي تم تنفيذه (على سبيل المثال، "deleted ticket #1234").</li>
+                <li><strong>When:</strong> طابع زمني بدقة كافية (عادةً ميكروثانية).</li>
+                <li><strong>Where:</strong> عنوان IP المصدر ومعرف الجلسة.</li>
+                <li><strong>Context:</strong> بيانات وصفية إضافية مثل المستأجر، والمورد المتأثر، والقيم قبل/بعد التغيير.</li>
+            </ul>
+
+            <h3>2.7.2 Database Trigger-Based Monitoring</h3>
+            <p>
+                يمكّن نظام المُحفِّزات (<span class="tech-term">triggers</span>) في <span class="tech-term">PostgreSQL</span> التنفيذ التلقائي للوظائف استجابةً لأحداث تعديل البيانات. في سياق المراقبة الأمنية، تخدم المُحفِّزات أغراضًا متعددة [25]:
+            </p>
+            <ul>
+                <li>
+                    <strong>Audit trail generation:</strong> تسجيل جميع التغييرات على الجداول ذات الأهمية الأمنية تلقائيًا.
+                </li>
+                <li>
+                    <strong>Data integrity enforcement:</strong> منع التعديلات غير المصرح بها (على سبيل المثال، حظر التغييرات على الحقول غير القابلة للتغيير).
+                </li>
+                <li>
+                    <strong>Real-time alerting:</strong> إطلاق إشعارات للأحداث ذات الصلة بالأمن مثل تغييرات الأدوار أو طلبات التصعيد.
+                </li>
+                <li>
+                    <strong>Timestamp management:</strong> ضمان دقة طوابع <span class="tech-term">updated_at</span> التي لا يمكن التلاعب بها بواسطة التطبيق.
+                </li>
+            </ul>
+
+            <h3>2.7.3 Immutable Logging Patterns</h3>
+            <p>
+                يوصي المعهد الوطني للمعايير والتكنولوجيا (<span class="tech-term">NIST</span>) في معياره <span class="tech-term">SP 800-92</span> [24] بتخزين سجلات الأمان بطريقة تمنع التعديل أو الحذف غير المصرح به. في أنظمة التسجيل القائمة على قواعد البيانات، يمكن فرض عدم القابلية للتغيير من خلال مزيج من:
+            </p>
+            <ul>
+                <li>
+                    سياسات الأمان على مستوى الصف (<span class="tech-term">Row-Level Security</span>) التي تقيد العمليات إلى <span class="tech-term">INSERT</span> و <span class="tech-term">SELECT</span> فقط.
+                </li>
+                <li>
+                    مُحفِّزات <span class="tech-term">PostgreSQL</span> التي تثير استثناءات عند محاولات <span class="tech-term">UPDATE</span> أو <span class="tech-term">DELETE</span>.
+                </li>
+                <li>
+                    قيود الامتيازات التي تمنع الأدوار غير الخارقة من تعديل جداول السجلات.
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 21)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">21</footer>
+        <div class="page-content">
+            <h2>2.8 Related Work and Comparison</h2>
+
+            <h3>2.8.1 Commercial Platform Security Comparison</h3>
+            <p>
+                يقارن الجدول التالي البنى الأمنية لتطبيق <span class="tech-term">HSA</span> مع ثلاث منصات مكتب مساعدة تجارية رائدة بناءً على الوثائق المتاحة للجمهور:
+            </p>
+            
+            <table>
+                <caption>Table 2.5: Compares the security architectures help desk platforms</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Security Feature</th>
+                        <th lang="en">Zendesk</th>
+                        <th lang="en">Freshdesk</th>
+                        <th lang="en">Intercom</th>
+                        <th lang="en">HSA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Tenant isolation model</td><td lang="en">Shared tables</td><td lang="en">Shared tables</td><td lang="en">Shared tables</td><td lang="en">Schema-per-tenant</td></tr>
+                    <tr><td lang="en">Database-level access control</td><td lang="en">Undisclosed</td><td lang="en">Undisclosed</td><td lang="en">Undisclosed</td><td lang="en">58 RLS policies</td></tr>
+                    <tr><td lang="en">DB trigger-based auditing</td><td lang="en">Undisclosed</td><td lang="en">Undisclosed</td><td lang="en">Undisclosed</td><td lang="en">51+ triggers</td></tr>
+                    <tr><td lang="en">Formal threat model</td><td lang="en">Undisclosed</td><td lang="en">Undisclosed</td><td lang="en">Undisclosed</td><td lang="en">STRIDE (6 categories)</td></tr>
+                    <tr><td lang="en">Multi-layer RBAC</td><td lang="en">Application only</td><td lang="en">Application only</td><td lang="en">Application only</td><td lang="en">4-layer enforcement</td></tr>
+                    <tr><td lang="en">Webhook HMAC verification</td><td lang="en">Partial</td><td lang="en">Partial</td><td lang="en">Limited</td><td lang="en">All 5 channels</td></tr>
+                    <tr><td lang="en">AI key encryption</td><td lang="en">Vendor-managed</td><td lang="en">Vendor-managed</td><td lang="en">Vendor-managed</td><td lang="en">Supabase Vault (AES-256)</td></tr>
+                    <tr><td lang="en">Progressive account lockout</td><td lang="en">Basic</td><td lang="en">Basic</td><td lang="en">Basic</td><td lang="en">5-level progressive</td></tr>
+                    <tr><td lang="en">CSP headers</td><td lang="en">Yes</td><td lang="en">Yes</td><td lang="en">Yes</td><td lang="en">Full strict CSP</td></tr>
+                    <tr><td lang="en">Open security architecture</td><td lang="en">No</td><td lang="en">No</td><td lang="en">No</td><td lang="en">Fully documented</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>2.8.2 Open-Source Alternatives</h3>
+            <p>
+                من بين البدائل مفتوحة المصدر، تعتبر منصة <span class="tech-term">Chatwoot</span> هي الأكثر قابلية للمقارنة. ومع ذلك، تستخدم <span class="tech-term">Chatwoot</span> بنية الجداول المشتركة متعددة المستأجرين، ولا تطبق سياسات <span class="tech-term">RLS</span> على مستوى قاعدة البيانات، وتفتقر إلى تكامل أصلي للذكاء الاصطناعي المستند إلى <span class="tech-term">RAG</span>. بنيتها الأمنية، رغم أنها كافية للنشر أحادي المستأجر، لا تعالج تحديات العزل عبر المستأجرين المتأصلة في بيئات <span class="tech-term">SaaS</span> متعددة المستأجرين.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 2: Literature Review - Content (Page 22)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">22</footer>
+        <div class="page-content">
+            <h3>2.8.3 Summary</h3>
+            <p>
+                تثبت مراجعة الأدبيات أن الخيارات المعمارية لتطبيق <span class="tech-term">HSA</span> — وهي العزل لكل مستأجر بمخطط، وإنفاذ <span class="tech-term">RBAC</span> رباعي الطبقات، وتسجيل التدقيق المستند إلى مُحفِّزات قاعدة البيانات، ونمذجة التهديدات <span class="tech-term">STRIDE</span>، وإدارة بيانات اعتماد الذكاء الاصطناعي المشفرة — مدعومة بشكل فردي من خلال الأبحاث الأكاديمية وأفضل الممارسات الصناعية. يمثل دمجها في منصة واحدة منشورة في بيئة الإنتاج تطبيقًا شاملاً لمبادئ الأمن السيبراني في مجال <span class="tech-term">SaaS</span> متعدد المستأجرين.
+            </p>
+
+            <p class="chapter-outro">
+                بعد إرساء الأساس النظري، ينتقل الفصل التالي إلى التفاصيل العملية لتصميم النظام والمنهجية المتبعة، موضحًا كيف تم تحويل هذه المبادئ إلى بنية برمجية متكاملة.
+            </p>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Title Page (Page 23)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">23</footer>
+        <div class="page-content">
+             <h1 style="text-align: center; border-bottom: none;">Chapter 3<br>System Design and Methodology</h1>
+
+            <figure>
+                <img src="3.png" alt="مخطط شامل لبنية النظام وتدفق البيانات بين المستخدمين والمنصة والخدمات الخارجية.">
+                <figcaption>
+                    <br>
+                    <strong>الشكل 3: مخطط بنية النظام الشاملة.</strong>
+                    <p style="text-align: center; margin-top: 8px;">
+                        يقدم هذا المخطط نظرة عامة على النظام، موضحًا التفاعلات بين أربعة مكونات رئيسية: <strong>المستخدمون</strong> (بأدوارهم المختلفة)، <strong>منصة HSA</strong> (قلب النظام)، <strong>الخدمات الخارجية</strong> (مثل منصات المراسلة ومزودي الذكاء الاصطناعي)، والبنية التحتية المستضيفة (Supabase و Vercel). يُظهر المخطط تدفقات البيانات الرئيسية، مثل تقديم التذاكر، معالجة رسائل الويب هوك (Webhook) مع التحقق من التوقيع، وتنفيذ استعلامات الذكاء الاصطناعي، مما يوضح كيف تتكامل المكونات المختلفة لتشكيل نظام دعم متكامل.
+                    </p>
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 24)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">24</footer>
+        <div class="page-content">
+            <p class="chapter-intro">
+                يصف هذا الفصل بالتفصيل القرارات المعمارية والتكنولوجية التي تشكل أساس منصة HSA، موضحًا كيف تم بناء كل مكون مع التركيز على الأمن منذ البداية.
+            </p>
+        
+            <h2>3.1 System Architecture</h2>
+
+            <h3>3.1.1 High-Level Architecture</h3>
+            <p>
+                يتبع نظام <span class="tech-term">HSA</span> بنية سحابية أصلية (<span class="tech-term">cloud-native</span>) ثلاثية الطبقات، حيث تعمل كل طبقة ضمن منطقة ثقة (<span class="tech-term">trust zone</span>) مميزة. تم تصميم البنية منذ البداية لفرض حدود أمان بين الطبقات، مما يضمن أن اختراق طبقة واحدة لا يمنح تلقائيًا إمكانية الوصول إلى الطبقة التالية.
+            </p>
+
+            <figure>
+                <img src="4.png" alt="مخططان يوضحان بنية مناطق الثقة الأربع في النظام، نظرة عامة وتفصيلية.">
+                <figcaption>
+                    <span class="figure-title">Figure 3.1a: System Architecture Four Trust Zones (Overview)</span><br>
+                    <span class="figure-title">Figure 3.1b: Trust zone architecture showing four distinct security boundaries (Full Component Detail)</span>
+                    <br>
+                     توضح هذه المخططات مفهوم مناطق الثقة الأربع الذي تقوم عليه بنية النظام. يبدأ أي طلب من المنطقة الأقل ثقة (الإنترنت) ويمر عبر حواجز أمنية متتالية للوصول إلى البيانات في المنطقة الأكثر ثقة (طبقة البيانات). كل انتقال بين منطقة وأخرى يتطلب اجتياز ضوابط أمنية محددة، مما يضمن عدم وجود مسار مباشر للبيانات الحساسة.
+                </figcaption>
+            </figure>
+            
+             <div class="highlight-box">
+                <span class="designer-note-title">إضافة المصمم:</span>
+                <p>
+                    فكرة مناطق الثقة (Trust Zones) هي حجر الزاوية في تصميم الأنظمة الآمنة. بدلاً من التعامل مع الشبكة كثنائية "موثوقة" أو "غير موثوقة"، يتم تقسيمها إلى مستويات. <strong>منطقة 1 (الإنترنت)</strong> تعتبر غير موثوقة تمامًا. <strong>منطقة 2 (طبقة الحافة)</strong> موثوقة جزئيًا، حيث يتم تصفية الطلبات الأولية. <strong>منطقة 3 (طبقة التطبيق)</strong> موثوقة، حيث يتم التعامل فقط مع الطلبات الموثقة. <strong>منطقة 4 (طبقة البيانات)</strong> هي الأكثر ثقة، ولا يمكن الوصول إليها إلا من خلال طبقة التطبيق عبر مفاتيح خاصة بالخادم. هذا التقسيم يطبق مبدأ "الحد الأدنى من الامتيازات" على مستوى الشبكة.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 25)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">25</footer>
+        <div class="page-content">
+            <p>
+                يمثل كل انتقال بين المناطق حدًا للثقة يفرض ضوابط أمنية محددة:
+            </p>
+            <ul>
+                <li>
+                    <strong>Zone 1 → Zone 2:</strong> تشفير <span class="tech-term">TLS</span>، تحديد معدل الطلبات (5 محاولات تسجيل دخول/15 دقيقة)، تقييد قائم على IP، والتحقق من توقيع <span class="tech-term">HMAC-SHA256 webhook</span> لجميع قنوات المراسلة الخمس.
+                </li>
+                <li>
+                    <strong>Zone 2 → Zone 3:</strong> التحقق من مصادقة <span class="tech-term">JWT</span>، تحديد سياق المستأجر (من خلال <span class="tech-term">slug</span> أو ربط النطاق المخصص)، التحقق من صحة الجلسة، والتحقق من رمز <span class="tech-term">CSRF</span>.
+                </li>
+                <li>
+                    <strong>Zone 3 → Zone 4:</strong> اتصالات قاعدة البيانات محددة النطاق بالمخطط (<span class="tech-term">SET search_path</span>)، عزل مفتاح <span class="tech-term">service_role</span> (جانب الخادم فقط، مستبعد من حزمة العميل عبر <span class="tech-term">next.config.js</span>)، والاستعلامات المُعَدّة (<span class="tech-term">parameterized queries</span>).
+                </li>
+            </ul>
+        </div>
+    </section>
+
+</body>
+</html>
