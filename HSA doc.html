@@ -1515,5 +1515,1096 @@ figcaption {
         </div>
     </section>
 
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 26)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">26</footer>
+        <div class="page-content">
+            <h3>3.1.2 Schema-Per-Tenant Database Architecture</h3>
+            <p>
+                تُعد بنية قاعدة البيانات حجر الزاوية في نموذج الأمان لتطبيق <span class="tech-term">HSA</span>. يحصل كل مستأجر على مخطط (<span class="tech-term">schema</span>) <span class="tech-term">PostgreSQL</span> مخصص يحتوي على نسخة كاملة ومعزولة من جميع جداول التطبيق:
+            </p>
+
+            <figure>
+                <img src="5.png" alt="مخطط يوضح بنية قاعدة البيانات القائمة على مخطط لكل مستأجر (Schema-per-tenant).">
+                <figcaption>
+                    <span class="figure-title">Figure 3.2: Schema-per-tenant database architecture</span>
+                    <br>
+                    يوضح هذا المخطط كيف يتم تحقيق العزل الصارم للبيانات. يوجد مخطط عام (<span class="tech-term">public schema</span>) للموارد المشتركة على مستوى المنصة (مثل قائمة المستأجرين وسجلات التدقيق)، بينما يحصل كل مستأجر (مثل tenant_taiz و tenant_binameen) على مخطط خاص به يحتوي على نسخة كاملة من جداول التطبيق (84 جدولاً) والسياسات الأمنية الخاصة به. هذا يعني هيكليًا أنه لا يمكن لاستعلام يعمل ضمن سياق مستأجر معين أن يصل إلى بيانات مستأجر آخر، مما يوفر عزلاً قويًا على مستوى قاعدة البيانات.
+                </figcaption>
+            </figure>
+
+            <p>
+                يقوم محرك التزويد باستنساخ 84 تعريفًا للجداول، و 25 سياسة <span class="tech-term">RLS</span>، و 29 مُحفِّزًا، وجميع الفهارس وقيود المفاتيح الخارجية من مخطط نموذجي لكل مستأجر جديد. يضمن هذا النهج المعروف بـ "ختم المخطط" (<span class="tech-term">schema stamp</span>) أن جميع المستأجرين يعملون على إصدارات مخطط متطابقة ومحدثة مع الحفاظ على عزل كامل للبيانات.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 27)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">27</footer>
+        <div class="page-content">
+            <h3>3.1.3 Request Flow Through Security Layers</h3>
+            <p>
+                يمر كل طلب <span class="tech-term">API</span> عبر أربع طبقات إنفاذ أمنية مستقلة قبل الوصول إلى قاعدة البيانات. يضمن هذا النهج القائم على الدفاع في العمق أنه حتى لو تم تجاوز طبقة واحدة، فإن الطبقات اللاحقة تحمي البيانات بشكل مستقل:
+            </p>
+
+            <figure>
+                <img src="6.png" alt="مخطط يوضح تدفق الطلب عبر أربع طبقات أمنية.">
+                <figcaption>
+                    <span class="figure-title">Figure 3.3: Four-layer defense-in-depth request flow</span>
+                    <br>
+                    يصور هذا المخطط رحلة طلب واجهة برمجة التطبيقات (<span class="tech-term">API</span>) عبر البنية الأمنية متعددة الطبقات. <strong>الطبقة الأولى (Middleware)</strong> تقوم بالفحص الأولي. <strong>الطبقة الثانية (API Guard)</strong> تتحقق من الصلاحيات الخاصة بالوظيفة المطلوبة. <strong>الطبقة الثالثة (Schema Isolation)</strong> تضمن أن الاستعلام موجه إلى مخطط المستأجر الصحيح فقط. <strong>الطبقة الرابعة (RLS)</strong> تقوم بتصفية الصفوف داخل المخطط للتأكد من أن المستخدم يرى فقط البيانات التي يمتلكها أو المصرح له برؤيتها. كل طبقة تعمل كحارس أمن مستقل.
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 28)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">28</footer>
+        <div class="page-content">
+            <h2>3.2 Materials and Tools</h2>
+
+            <h3>3.2.1 Software Stack</h3>
+            <p>
+                تم اختيار كل تقنية في المكدس البرمجي مع منطق أمني صريح:
+            </p>
+
+            <table>
+                <caption>Table 3.1:Technology Stack and Security Rationale</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Technology</th>
+                        <th lang="en">Version</th>
+                        <th lang="en">Role</th>
+                        <th lang="en">Security Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td lang="en">Next.js</td><td lang="en">14</td><td lang="en">Frontend + API routes</td>
+                        <td lang="en">Edge middleware for pre-request security checks; Server Components prevent client-side data exposure</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">React</td><td lang="en">18</td><td lang="en">UI library</td>
+                        <td lang="en">DOM-based rendering auto-escapes HTML entities, preventing reflected XSS</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">TypeScript</td><td lang="en">5.x</td><td lang="en">Programming language</td>
+                        <td lang="en">Static type checking eliminates injection vulnerabilities; strict mode catches type confusion</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">PostgreSQL</td><td lang="en">15</td><td lang="en">Primary database</td>
+                        <td lang="en">Native RLS; schema isolation; trigger system for audit logging; pgvector for RAG</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Supabase</td><td lang="en">Latest</td><td lang="en">Backend-as-a-Service</td>
+                        <td lang="en">Built-in JWT auth (PKCE); RLS integration; Vault for encrypted secrets; Realtime</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Deno</td><td lang="en">1.x</td><td lang="en">Edge function runtime</td>
+                        <td lang="en">Sandboxed execution; no file/network access by default; JWT verification at edge</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">TailwindCSS</td><td lang="en">Latest</td><td lang="en">Styling</td>
+                        <td lang="en">CSS-only — no JavaScript execution in styles</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Turborepo</td><td lang="en">Latest</td><td lang="en">Monorepo build</td>
+                        <td lang="en">Build isolation between packages; prevents cross-package dependency contamination</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 29)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">29</footer>
+        <div class="page-content">
+            <h3>3.2.2 Security Tools and Libraries</h3>
+            <table>
+                <caption>Table 3.2: Security Tools and Libraries</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Tool / Library</th>
+                        <th lang="en">Purpose</th>
+                        <th lang="en">Implementation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">jose (JavaScript)</td><td lang="en">JWT creation and verification</td><td lang="en">RS256/HS256 token validation in middleware and edge functions</td></tr>
+                    <tr><td lang="en">crypto (Node.js)</td><td lang="en">CSRF token generation</td><td lang="en">crypto.randomBytes() for cryptographically secure random tokens</td></tr>
+                    <tr><td lang="en">HMAC-SHA256</td><td lang="en">Webhook signature verification</td><td lang="en">Verifies inbound messages from all 5 messaging channels</td></tr>
+                    <tr><td lang="en">Supabase Vault</td><td lang="en">Encrypted credential storage</td><td lang="en">AES-256 encryption for tenant AI provider API keys</td></tr>
+                    <tr><td lang="en">pgvector</td><td lang="en">Vector similarity search</td><td lang="en">Tenant-isolated cosine similarity search for RAG retrieval</td></tr>
+                    <tr><td lang="en">bcrypt (Supabase Auth)</td><td lang="en">Password hashing</td><td lang="en">Automatic hashing with configurable work factor</td></tr>
+                    <tr><td lang="en">SHA-256</td><td lang="en">OTP code hashing</td><td lang="en">One-time passwords stored as hashes, never plaintext</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.2.3 Development Tools</h3>
+            <table>
+                <caption>Table 3.3: Development Tools Overview</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Tool</th>
+                        <th lang="en">Purpose</th>
+                        <th lang="en">Security Relevance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">TypeScript strict mode</td><td lang="en">Type safety enforcement</td><td lang="en">Prevents type confusion, null reference, implicit any</td></tr>
+                    <tr><td lang="en">ESLint</td><td lang="en">Code quality</td><td lang="en">Custom rules enforce API route permission annotations</td></tr>
+                    <tr><td lang="en">Git + GitHub</td><td lang="en">Version control</td><td lang="en">Feature branch workflow ensures code review before merge</td></tr>
+                    <tr><td lang="en">Supabase CLI</td><td lang="en">Database migrations</td><td lang="en">All schema changes tracked as versioned SQL files</td></tr>
+                    <tr><td lang="en">Vercel</td><td lang="en">Deployment platform</td><td lang="en">Automatic HTTPS, edge network, environment variable encryption</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 30)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">30</footer>
+        <div class="page-content">
+            <h3>3.2.4 Infrastructure</h3>
+            <table>
+                <caption>Table 3.4:Infrastructure Components</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Component</th>
+                        <th lang="en">Provider</th>
+                        <th lang="en">Security Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Application hosting</td><td lang="en">Vercel</td><td lang="en">Automatic TLS 1.3, DDoS protection, edge caching, isolated builds</td></tr>
+                    <tr><td lang="en">Database hosting</td><td lang="en">Supabase Cloud</td><td lang="en">Managed PostgreSQL 15, automatic backups, connection pooling, SSL-only</td></tr>
+                    <tr><td lang="en">Edge functions</td><td lang="en">Supabase (Deno Deploy)</td><td lang="en">Sandboxed Deno runtime, per-function isolation, JWT at edge</td></tr>
+                    <tr><td lang="en">File storage</td><td lang="en">Supabase Storage</td><td lang="en">Bucket-level access policies, signed URLs with expiration, MIME validation</td></tr>
+                    <tr><td lang="en">DNS and CDN</td><td lang="en">Vercel Edge Network</td><td lang="en">Global edge distribution, automatic SSL certificate management</td></tr>
+                </tbody>
+            </table>
+
+            <h2>3.3 Implementation</h2>
+            <h3>3.3.1 Authentication System</h3>
+            <p>
+                يستخدم نظام <span class="tech-term">HSA</span> خدمة <span class="tech-term">Supabase Auth</span> كمزود للهوية، مع توسيع حمولة <span class="tech-term">JWT</span> القياسية لتشمل مطالبات مخصصة (<span class="tech-term">custom claims</span>) تدمج سياق المستأجر الخاص بالمستخدم وتسلسله الهرمي للأدوار. تحقق المصادقة في آن واحد ثلاث معلومات حيوية:
+            </p>
+            <ol>
+                <li><strong>User identity</strong> — المعرف الفريد للمستخدم المصادق عليه (<span class="tech-term">UUID</span>).</li>
+                <li><strong>Tenant context</strong> — مخطط <span class="tech-term">PostgreSQL</span> الذي توجد فيه بيانات المستخدم.</li>
+                <li><strong>Authorization level</strong> — دور المستخدم داخل المستأجر الخاص به.</li>
+            </ol>
+            <p>تتضمن بنية مطالبات <span class="tech-term">JWT</span> المخصصة ما يلي:</p>
+            <table>
+                <caption>Table 3.5: JWT Custom Claims Structure</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Claim</th><th lang="en">Type</th><th lang="en">Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">sub</td><td lang="en">UUID</td><td lang="en">Supabase user ID</td></tr>
+                    <tr><td lang="en">tenant_id</td><td lang="en">UUID</td><td lang="en">Tenant registry reference</td></tr>
+                    <tr><td lang="en">schema_name</td><td lang="en">string</td><td lang="en">PostgreSQL schema (e.g., tenant_taiz)</td></tr>
+                    <tr><td lang="en">tenant_role</td><td lang="en">string</td><td lang="en">support_manager, support_agent, customer</td></tr>
+                    <tr><td lang="en">role_weight</td><td lang="en">number</td><td lang="en">Numeric hierarchy: admin=4, manager=3, agent=2, customer=1</td></tr>
+                    <tr><td lang="en">subscription_tier</td><td lang="en">string</td><td lang="en">Feature tier for quota enforcement</td></tr>
+                    <tr><td lang="en">tenant_status</td><td lang="en">string</td><td lang="en">active, suspended, inactive</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 31)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">31</footer>
+        <div class="page-content">
+            <p>
+                يتم حقن هذه المطالبات بواسطة خطاف دالة (<span class="tech-term">function hook</span>) في <span class="tech-term">PostgreSQL</span> يتم تنفيذه عند إصدار الرمز المميز، حيث يستعلم عن عضوية المستأجر ودوره للمستخدم من قاعدة البيانات. يضمن هذا النهج أن تكون المطالبات دائمًا متسقة مع حالة قاعدة البيانات في وقت إصدار الرمز.
+            </p>
+            <p>
+                تتم عملية المصادقة عبر الخطوات التالية:
+            </p>
+            <ol>
+                <li>يقدم المستخدم بيانات الاعتماد (البريد الإلكتروني + كلمة المرور) إلى <span class="tech-term">Supabase Auth</span>.</li>
+                <li>تتحقق <span class="tech-term">Supabase Auth</span> من بيانات الاعتماد وتستعلم عن ربط المستأجر الخاص بالمستخدم من قاعدة البيانات.</li>
+                <li>تقوم دالة <span class="tech-term">PostgreSQL</span> بحقن المطالبات المخصصة (<span class="tech-term">tenant_id, schema_name, tenant_role, role_weight</span>) في <span class="tech-term">JWT</span>.</li>
+                <li>تصدر <span class="tech-term">Supabase Auth</span> الـ<span class="tech-term">JWT</span> مع المطالبات المخصصة + رمز تحديث (<span class="tech-term">refresh token</span>).</li>
+                <li>يخزن العميل الـ<span class="tech-term">JWT</span> في ملف تعريف ارتباط (<span class="tech-term">cookie</span>) من نوع <span class="tech-term">HTTP-only, Secure, SameSite=Lax</span>.</li>
+                <li>في الطلبات اللاحقة، تقوم البرمجية الوسيطة (<span class="tech-term">middleware</span>) في <span class="tech-term">Next.js</span> بالتحقق من صحة الـ<span class="tech-term">JWT</span> واستخراج سياق المستأجر.</li>
+            </ol>
+            <p>
+                يتم تخزين مسؤولي النظام بشكل منفصل في جدول <span class="tech-term">public.system_admins</span>، بشكل مستقل عن أي مستأجر. لا يحملون مطالبات خاصة بالمستأجر. بدلاً من ذلك، تكتشف البرمجية الوسيطة حالة مسؤول النظام عن طريق الاستعلام من <span class="tech-term">public.system_admins</span> عند تسجيل الدخول، وتعيين علامة <span class="tech-term">isSystemAdmin</span> التي تتجاوز قيود المسار الخاصة بالمستأجر مع الاستمرار في فرض المصادقة.
+            </p>
+            <p>
+                تنفذ إدارة الجلسات الضوابط الأمنية التالية:
+            </p>
+            <ul>
+                <li>
+                    <strong>Cookie attributes:</strong> <span class="tech-term">HTTP-only</span> (يمنع الوصول عبر <span class="tech-term">JavaScript</span>)، <span class="tech-term">Secure</span> (لـ<span class="tech-term">HTTPS</span> فقط)، <span class="tech-term">SameSite=Lax</span> (يمنع <span class="tech-term">CSRF</span> في الطلبات عبر المصادر).
+                </li>
+                <li>
+                    <strong>Persistent sessions:</strong> يتم تتبعها في جدول <span class="tech-term">public.persistent_sessions</span> مع 12 عمودًا بما في ذلك <span class="tech-term">device_info</span>، <span class="tech-term">ip_address</span>، <span class="tech-term">last_active_at</span>، وحالة الإلغاء.
+                </li>
+                <li>
+                    <strong>Impersonation prevention:</strong> تتحقق دالة قاعدة البيانات <span class="tech-term">create_persistent_session</span> من أن <span class="tech-term">auth.uid()</span> يطابق <span class="tech-term">user_id_param</span>، وتثير استثناءً إذا حاول مستخدم إنشاء جلسة لمستخدم آخر.
+                </li>
+                <li>
+                    <strong>Session revocation:</strong> يمكن إلغاء الجلسات بشكل فردي عن طريق تعيين <span class="tech-term">revoked = true</span>، مما يبطل الجلسة فورًا دون التأثير على الجلسات النشطة الأخرى.
+                </li>
+            </ul>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 32)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">32</footer>
+        <div class="page-content">
+            <h3>3.3.2 Multi-Tenant Isolation</h3>
+            <p>
+                يطبق نظام <span class="tech-term">HSA</span> نموذج العزل القائم على مخطط لكل مستأجر (<span class="tech-term">schema-per-tenant</span>)، حيث يتلقى كل مستأجر مخطط <span class="tech-term">PostgreSQL</span> مخصصًا يحتوي على 84 جدولًا. يوفر هذا التصميم الضمانات الأمنية التالية:
+            </p>
+
+            <table>
+                <caption>Table 3.6: Schema-per-Tenant Isolation Security Guarantees</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Security Property</th>
+                        <th lang="en">Guarantee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Data separation</td><td lang="en">Tenant A cannot query Tenant B's tables via SQL</td></tr>
+                    <tr><td lang="en">Schema-level ownership</td><td lang="en">Each tenant schema has independent permissions</td></tr>
+                    <tr><td lang="en">Cross-tenant leakage prevention</td><td lang="en">Requires compromising service_role key to cross schemas</td></tr>
+                    <tr><td lang="en">Blast radius containment</td><td lang="en">An RLS bypass in one tenant does not expose other tenants</td></tr>
+                    <tr><td lang="en">SQL injection isolation</td><td lang="en">Injected queries execute within the current schema context</td></tr>
+                </tbody>
+            </table>
+
+            <p>
+                عند تزويد مستأجر جديد، يقوم النظام بما يلي:
+            </p>
+            <ol>
+                <li>إنشاء مخطط <span class="tech-term">PostgreSQL</span> جديد باسم <span class="tech-term">tenant_&lt;slug&gt;</span>.</li>
+                <li>استنساخ جميع تعريفات الجداول الـ 84 من المخطط النموذجي.</li>
+                <li>نسخ جميع سياسات <span class="tech-term">RLS</span> الـ 25 مع مراجع مخطط خاصة بالمستأجر.</li>
+                <li>إنشاء جميع المُحفِّزات الـ 29 لتسجيل التدقيق وسلامة البيانات والإشعارات في الوقت الفعلي.</li>
+                <li>تكرار جميع الفهارس وقيود المفاتيح الخارجية.</li>
+                <li>تسجيل المستأجر في جدول <span class="tech-term">public.tenants</span>.</li>
+            </ol>
+            <p>
+                تُنفَّذ عملية التزويد بامتيازات <span class="tech-term">service_role</span> ولا يمكن الوصول إليها إلا من خلال مسارات <span class="tech-term">API</span> من جانب الخادم محمية بالتحقق من دور مسؤول النظام.
+            </p>
+            <p>
+                يتم تحديد نطاق اتصالات قاعدة البيانات للمستأجر الصحيح عن طريق تعيين <span class="tech-term">search_path</span> في <span class="tech-term">PostgreSQL</span> على مستوى الاتصال: <span class="tech-term">SET search_path = tenant_&lt;slug&gt;, public</span>. هذا يضمن أن جميع الاستعلامات اللاحقة موجهة تلقائيًا إلى مخطط المستأجر الصحيح دون الحاجة إلى بادئات مخطط صريحة في كود التطبيق.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 33)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">33</footer>
+        <div class="page-content">
+            <h3>3.3.3 RBAC Implementation</h3>
+            <p>
+                يطبق نظام <span class="tech-term">HSA</span> نموذج تحكم في الوصول قائم على الأدوار (<span class="tech-term">Role-Based Access Control</span>) من أربعة مستويات مع نظام أوزان رقمي للإنفاذ الهرمي:
+            </p>
+
+            <table>
+                <caption>Table 3.7: RBAC Role Hierarchy Model</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Role</th><th lang="en">Weight</th><th lang="en">Scope</th><th lang="en">Capabilities</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">system_admin</td><td lang="en">4</td><td lang="en">Cross-tenant</td><td lang="en">Full platform access, tenant management, system configuration</td></tr>
+                    <tr><td lang="en">support_manager</td><td lang="en">3</td><td lang="en">Single tenant</td><td lang="en">Team management, SLA configuration, escalation, reporting</td></tr>
+                    <tr><td lang="en">support_agent</td><td lang="en">2</td><td lang="en">Single tenant</td><td lang="en">Ticket handling, customer messaging, knowledge base access</td></tr>
+                    <tr><td lang="en">customer</td><td lang="en">1</td><td lang="en">Single tenant</td><td lang="en">Own tickets only, self-service portal, chat initiation</td></tr>
+                </tbody>
+            </table>
+
+            <p>
+                يمكّن نظام الأوزان الرقمي من إجراء مقارنات هرمية بسيطة: يمكن لمستخدم بوزن N إدارة المستخدمين بوزن أقل من N. وهذا يمنع الوكلاء من تعديل حسابات المديرين، ويمنع المديرين من الوصول إلى وظائف مسؤول النظام.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 34)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">34</footer>
+        <div class="page-content">
+            <p>
+                يتم فرض <span class="tech-term">RBAC</span> على أربع طبقات مستقلة، تعمل كل منها بافتراضات ثقة خاصة بها:
+            </p>
+            <p>
+                <strong>Layer 1 — Middleware Guards (Edge Runtime):</strong> تعمل البرمجية الوسيطة لـ<span class="tech-term">Next.js</span> على حافة شبكة <span class="tech-term">Vercel</span> قبل تنفيذ أي معالج <span class="tech-term">API</span> أو صفحة. تتحقق من <span class="tech-term">JWT</span>، وتستخرج <span class="tech-term">tenant_role</span>، وتتحقق منه مقابل خريطة تكوين المسار التي تحدد الحد الأدنى من متطلبات الدور لكل نمط <span class="tech-term">URL</span>.
+            </p>
+            <p>
+                <strong>Layer 2 — API Handler Guards:</strong> يتحقق كل معالج مسار <span class="tech-term">API</span> بشكل مستقل من دور المستخدم باستخدام دالة حماية <span class="tech-term">requireRole()</span>. يوفر هذا دفاعًا في العمق: حتى لو سمح خطأ في تكوين البرمجية الوسيطة بمرور طلب غير مصرح به إلى المعالج، فإن فحص الدور الخاص بالمعالج سيرفضه.
+            </p>
+            <p>
+                <strong>Layer 3 — Schema Isolation:</strong> يتم تعيين <span class="tech-term">search_path</span> لاتصال قاعدة البيانات بناءً على مطالبة <span class="tech-term">schema_name</span> للمستخدم الموثوق به. يمكن لمستخدم مصادق عليه لـ<span class="tech-term">tenant_taiz</span> فقط الاستعلام عن الجداول في مخطط <span class="tech-term">tenant_taiz</span> — تمنع قاعدة البيانات نفسها الوصول عبر المستأجرين بغض النظر عن سلوك طبقة التطبيق.
+            </p>
+            <p>
+                <strong>Layer 4 — Row-Level Security:</strong> تفرض سياسات <span class="tech-term">RLS</span> على جداول مخطط المستأجر شروطًا قائمة على الأدوار في كل استعلام <span class="tech-term">SQL</span>. على سبيل المثال، تقيد سياسات جدول الإشعارات عمليات <span class="tech-term">SELECT</span>، <span class="tech-term">UPDATE</span>، و<span class="tech-term">DELETE</span> على الصفوف حيث يتطابق <span class="tech-term">user_id</span> مع المعرف الداخلي للمستخدم الموثوق به، مما يضمن العزل على مستوى الصف حتى داخل مستأجر واحد.
+            </p>
+
+            <figure>
+                <img src="7.png" alt="مخطط تفصيلي يوضح كيفية تطبيق الأمان على مستوى الصف عبر مكدس أمان متعدد الطبقات.">
+                <figcaption>
+                    <span class="figure-title">Figure 3.4: Row Level Security: Layered Security Stack</span>
+                    <br>
+                    يوضح هذا المخطط بالتفصيل كيف يتم تطبيق نموذج <span class="tech-term">RBAC</span> عبر الطبقات الأربع. كل طبقة لها افتراضات ثقة مستقلة، مما يعني أن تجاوز طبقة واحدة لا يؤدي إلى كشف البيانات، لأن الطبقات 2 و3 و4 ستفرض كل منها الضوابط بشكل مستقل. هذه البنية تجعل الوصول غير المصرح به إلى البيانات "مستحيلاً هيكلياً" على مستوى قاعدة البيانات، مما يوفر أقوى ضمان أمني.
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 35)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">35</footer>
+        <div class="page-content">
+            <h3>3.3.4 Database Security</h3>
+            <p>
+                يطبق نظام <span class="tech-term">HSA</span> ما مجموعه 58 سياسة <span class="tech-term">RLS</span> عبر المخططات العامة والخاصة بالمستأجرين:
+            </p>
+            <p><strong>Public Schema (33 policies across 20 tables):</strong></p>
+            <table>
+                <caption>Table 3.8: Public Schema RLS Policies Overview</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Table</th>
+                        <th lang="en">Policies</th>
+                        <th lang="en">Access Pattern</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">audit_logs</td><td lang="en">SELECT + INSERT only</td><td lang="en">No UPDATE/DELETE — immutable</td></tr>
+                    <tr><td lang="en">tenant_ai_credentials</td><td lang="en">SELECT (admins) + ALL (service_role)</td><td lang="en">Strictest — API keys</td></tr>
+                    <tr><td lang="en">persistent_sessions</td><td lang="en">Row-level: auth.uid() = user_id</td><td lang="en">Own sessions only</td></tr>
+                    <tr><td lang="en">otp_verifications</td><td lang="en">No user-facing policies</td><td lang="en">service_role only</td></tr>
+                    <tr><td lang="en">system_admins</td><td lang="en">SELECT for authenticated</td><td lang="en">Read-only for non-admins</td></tr>
+                </tbody>
+            </table>
+            
+            <p><strong>Tenant Schema (25 policies across 12 tables):</strong></p>
+            <table>
+                <caption>Table 3.9: Tenant Schema RLS Policies Overview</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Table</th>
+                        <th lang="en">Policies</th>
+                        <th lang="en">Access Pattern</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">business_settings</td><td lang="en">Read: all, Write: admin/manager</td><td lang="en">Role-gated configuration</td></tr>
+                    <tr><td lang="en">global_escalation_settings</td><td lang="en">ALL: admin only, SELECT: admin+manager</td><td lang="en">Admin-controlled</td></tr>
+                    <tr><td lang="en">notifications</td><td lang="en">Own user only (SELECT/UPDATE/DELETE)</td><td lang="en">Row-level ownership</td></tr>
+                    <tr><td lang="en">ticket_escalation_history</td><td lang="en">SELECT: all staff, INSERT: staff only</td><td lang="en">Staff-restricted</td></tr>
+                    <tr><td lang="en">ticket_settings</td><td lang="en">Read: all, Write: admin/manager</td><td lang="en">Role-gated settings</td></tr>
+                    <tr><td lang="en">chat_messages / chat_sessions</td><td lang="en">SELECT: all authenticated</td><td lang="en">Realtime-enabled</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 36)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">36</footer>
+        <div class="page-content">
+            <p>
+                يفرض أكثر من 51 مُحفِّزًا (<span class="tech-term">triggers</span>) عبر المخططات العامة والخاصة بالمستأجرين الأمان، والسلامة، والتشغيل الآلي:
+            </p>
+            <table>
+                <caption>Table 3.10: Database Trigger Categories (Security & Integrity)</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Category</th><th lang="en">Count</th><th lang="en">Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Timestamp management</td><td lang="en">16</td><td lang="en">Auto-set updated_at on row modification</td></tr>
+                    <tr><td lang="en">Realtime notifications</td><td lang="en">5</td><td lang="en">Push to WebSocket subscribers</td></tr>
+                    <tr><td lang="en">Workflow automation</td><td lang="en">5</td><td lang="en">Ticket SLA enforcement, auto-assignment, escalation</td></tr>
+                    <tr><td lang="en">Data integrity</td><td lang="en">2</td><td lang="en">Prevent duplicate team managers, validate manager role</td></tr>
+                    <tr><td lang="en">Module security</td><td lang="en">3</td><td lang="en">Prevent module code tampering, circular dependencies</td></tr>
+                    <tr><td lang="en">Audit logging</td><td lang="en">1+</td><td lang="en">Track security-relevant changes</td></tr>
+                </tbody>
+            </table>
+            <p>
+                يوفر جدول <span class="tech-term">public.audit_logs</span> مسار تدقيق أمني للإلحاق فقط (<span class="tech-term">append-only</span>) مع 10 أعمدة تشمل الإجراء، اسم الجدول، معرف السجل، البيانات القديمة، البيانات الجديدة، معرف المستخدم، عنوان IP، ووكيل المستخدم. يتم فرض عدم القابلية للتغيير عبر <span class="tech-term">RLS</span> — حيث توجد سياسات <span class="tech-term">SELECT</span> و <span class="tech-term">INSERT</span> فقط. لا توجد سياسة <span class="tech-term">UPDATE</span> أو <span class="tech-term">DELETE</span> محددة. توفر 8 فهارس على الأعمدة التي يتم الاستعلام عنها بشكل متكرر استعلامًا جنائيًا فعالاً.
+            </p>
+            <p>
+                تستخدم جميع تفاعلات قاعدة البيانات <span class="tech-term">Supabase JavaScript SDK</span>، الذي ينشئ حصريًا استعلامات مُعَدّة (<span class="tech-term">parameterized queries</span>)، مما يلغي ثغرات حقن <span class="tech-term">SQL</span> من خلال استخدام <span class="tech-term">API</span> القياسي.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 37)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">37</footer>
+        <div class="page-content">
+            <h3>3.3.5 Network Security Layer</h3>
+            <p>
+                يطبق نظام <span class="tech-term">HSA</span> نظامين متكاملين لتحديد معدل الطلبات:
+            </p>
+            <p><strong>IP-Based Sliding Window Rate Limiter:</strong></p>
+            <table>
+                <caption>Table 3.11: Rate Limiting (Sliding Window Model)</caption>
+                <thead>
+                    <tr><th lang="en">Endpoint</th><th lang="en">Limit</th><th lang="en">Window</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Login (/api/auth/login)</td><td lang="en">5 attempts</td><td lang="en">15 minutes</td></tr>
+                    <tr><td lang="en">Registration (/api/auth/register)</td><td lang="en">3 attempts</td><td lang="en">1 hour</td></tr>
+                    <tr><td lang="en">Forgot password</td><td lang="en">3 attempts</td><td lang="en">1 hour</td></tr>
+                    <tr><td lang="en">General API</td><td lang="en">100 requests</td><td lang="en">1 minute</td></tr>
+                </tbody>
+            </table>
+
+            <p><strong>Token Bucket Rate Limiter for AI chat:</strong></p>
+            <table>
+                <caption>Table 3.12: Token Bucket Rate Limiting Configuration</caption>
+                <thead>
+                    <tr><th lang="en">Scope</th><th lang="en">Capacity</th><th lang="en">Refill Rate</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Per session</td><td lang="en">10 tokens</td><td lang="en">~10 per minute</td></tr>
+                    <tr><td lang="en">Per user</td><td lang="en">100 tokens</td><td lang="en">~100 per day</td></tr>
+                    <tr><td lang="en">Burst protection</td><td lang="en">3 tokens</td><td lang="en">3 per second</td></tr>
+                </tbody>
+            </table>
+            
+            <p>يتصاعد القفل التدريجي للحساب مع كل حدث قفل لاحق:</p>
+            <table>
+                <caption>Table 3.13: Progressive Account Lockout Policy</caption>
+                <thead>
+                    <tr><th lang="en">Lockout Level</th><th lang="en">Duration</th><th lang="en">Trigger</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">1st lockout</td><td lang="en">5 minutes</td><td lang="en">5 failed attempts within 30-minute window</td></tr>
+                    <tr><td lang="en">2nd lockout</td><td lang="en">15 minutes</td><td lang="en">5 more failed attempts</td></tr>
+                    <tr><td lang="en">3rd lockout</td><td lang="en">30 minutes</td><td lang="en">Continued failures</td></tr>
+                    <tr><td lang="en">4th lockout</td><td lang="en">1 hour</td><td lang="en">Continued failures</td></tr>
+                    <tr><td lang="en">5th+ lockout</td><td lang="en">24 hours</td><td lang="en">Persistent attack pattern</td></tr>
+                </tbody>
+            </table>
+
+            <p>يتم تنفيذ حماية <span class="tech-term">CSRF</span> من خلال:</p>
+            <ul>
+                <li><strong>SameSite=Lax cookies:</strong> تمنع المتصفح من إرسال ملفات تعريف الارتباط الخاصة بالمصادقة في الطلبات عبر المصادر.</li>
+                <li><strong>CSRF tokens:</strong> يتم إنشاؤها باستخدام <span class="tech-term">crypto.randomBytes()</span> للعمليات التي تغير الحالة، ويتم التحقق منها من جانب الخادم.</li>
+                <li><strong>Origin verification:</strong> تتحقق البرمجية الوسيطة من ترويسات <span class="tech-term">Origin</span> و <span class="tech-term">Referer</span> مقابل النطاق المتوقع.</li>
+            </ul>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 38)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">38</footer>
+        <div class="page-content">
+            <p>ترويسات الأمان المطبقة على جميع الاستجابات:</p>
+            <table>
+                <caption>Table 3.14: Security Headers Configuration (CSP & HTTP Security)</caption>
+                <thead>
+                    <tr><th lang="en">Header</th><th lang="en">Value</th><th lang="en">Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td lang="en">Content-Security-Policy</td>
+                        <td lang="en" style="font-size: 9pt; word-break: break-all;">Strict CSP with default-src 'self'</td>
+                        <td lang="en">Prevents XSS, clickjacking, unauthorized resource loading</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">X-Content-Type-Options</td>
+                        <td lang="en">nosniff</td>
+                        <td lang="en">Prevents MIME-type sniffing attacks</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Referrer-Policy</td>
+                        <td lang="en">strict-origin-when-cross-origin</td>
+                        <td lang="en">Limits referrer information leakage</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">X-XSS-Protection</td>
+                        <td lang="en">1; mode=block</td>
+                        <td lang="en">Legacy XSS filter (defense-in-depth)</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Strict-Transport-Security</td>
+                        <td lang="en">max-age=31536000; includeSubDomains; preload</td>
+                        <td lang="en">Forces HTTPS for 1 year</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">Permissions-Policy</td>
+                        <td lang="en">camera=(), microphone=(), geolocation=()</td>
+                        <td lang="en">Disables unnecessary browser APIs</td>
+                    </tr>
+                    <tr>
+                        <td lang="en">X-Frame-Options</td>
+                        <td lang="en">DENY (via frame-ancestors 'none' in CSP)</td>
+                        <td lang="en">Prevents clickjacking via iframes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 39)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">39</footer>
+        <div class="page-content">
+            <h3>3.3.6 Edge Function Security</h3>
+            <p>
+                ينشر نظام <span class="tech-term">HSA</span> عدد 35 دالة حافة (<span class="tech-term">Edge Functions</span>) من <span class="tech-term">Supabase</span> تعمل على بيئة تشغيل <span class="tech-term">Deno</span>. توفر <span class="tech-term">Deno</span> بيئة تنفيذ قائمة على الأمان أولاً:
+            </p>
+            <ul>
+                <li>
+                    <strong>No file system access by default:</strong> لا يمكن لدوال الحافة قراءة أو كتابة الملفات على نظام المضيف ما لم يتم منحها الإذن صراحة.
+                </li>
+                <li>
+                    <strong>No network access by default:</strong> يجب تمكين طلبات <span class="tech-term">HTTP</span> الصادرة بشكل صريح، مما يحد من نصف قطر الانفجار (<span class="tech-term">blast radius</span>) لدالة مخترقة.
+                </li>
+                <li>
+                    <strong>Per-function isolation:</strong> تعمل كل دالة حافة في معزل مستقل في <span class="tech-term">Deno</span>، مما يمنع التلوث عبر الدوال.
+                </li>
+            </ul>
+
+            <figure>
+                <img src="8.png" alt="مخطط تسلسلي يوضح آلية التحقق من أمان الويب هوك (Webhook).">
+                <figcaption>
+                    <span class="figure-title">Figure 3.4: Webhook Security Sequence Diagram</span>
+                    <br>
+                    يوضح هذا المخطط التسلسلي خطوات تأمين رسائل الويب هوك الواردة من منصات خارجية مثل واتساب. عند وصول رسالة، تستخرج دالة الحافة التوقيع الرقمي من الترويسة، وتحسب التوقيع المتوقع باستخدام المفتاح السري المخزن، وتقارنهما باستخدام دالة مقارنة آمنة زمنيًا (<span class="tech-term">timing-safe</span>) لمنع هجمات القنوات الجانبية. يتم رفض أي رسالة ذات توقيع غير صالح على الفور، ولا تتم معالجة سوى الرسائل الموثوقة.
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+    
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 40)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">40</footer>
+        <div class="page-content">
+            <p>
+                تطبق جميع تكاملات قنوات المراسلة الخمس التحقق من التوقيع باستخدام <span class="tech-term">HMAC-SHA256</span>:
+            </p>
+            <table>
+                <caption>Table 3.15: Webhook Security Verification Methods (HMAC)</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Channel</th>
+                        <th lang="en">Verification Method</th>
+                        <th lang="en">Signature Header</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">WhatsApp Business API</td><td lang="en">HMAC-SHA256 of request body</td><td lang="en">X-Hub-Signature-256</td></tr>
+                    <tr><td lang="en">Telegram Bot API</td><td lang="en">Secret token comparison</td><td lang="en">URL parameter</td></tr>
+                    <tr><td lang="en">Instagram Graph API</td><td lang="en">HMAC-SHA256 of request body</td><td lang="en">X-Hub-Signature-256</td></tr>
+                    <tr><td lang="en">Facebook Messenger API</td><td lang="en">HMAC-SHA256 of request body</td><td lang="en">X-Hub-Signature-256</td></tr>
+                    <tr><td lang="en">TikTok Business API</td><td lang="en">HMAC-SHA256 signature</td><td lang="en">Custom header</td></tr>
+                </tbody>
+            </table>
+            
+            <p>
+                يتبع كل معالج ويب هوك نفس النمط الأمني:
+            </p>
+            <ol>
+                <li>استخراج التوقيع من ترويسة الطلب.</li>
+                <li>حساب التوقيع المتوقع <span class="tech-term">HMAC-SHA256</span> باستخدام السر المخزن وجسم الطلب الخام.</li>
+                <li>مقارنة التوقيعات باستخدام دالة مقارنة آمنة زمنيًا (<span class="tech-term">timing-safe</span>) لمنع هجمات التوقيت.</li>
+                <li>رفض الطلب بحالة 401 إذا لم تتطابق التوقيعات.</li>
+                <li>معالجة حمولة الويب هوك فقط بعد التحقق الناجح من التوقيع.</li>
+            </ol>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 41)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">41</footer>
+        <div class="page-content">
+            <h3>3.3.7 Client-Side Security</h3>
+            <p>
+                يتم التحقق من صحة جميع مدخلات المستخدم على كل من جانب العميل وجانب الخادم. يوفر التحقق من جانب العميل ملاحظات فورية للمستخدم، بينما يتحقق التحقق من جانب الخادم بشكل مستقل من جميع المدخلات بغض النظر عن فحوصات جانب العميل.
+            </p>
+            <p>
+                يوفر نموذج المكونات في <span class="tech-term">React</span> حماية مدمجة ضد هجمات <span class="tech-term">XSS</span>:
+            </p>
+            <ul>
+                <li>
+                    <strong>DOM-based rendering:</strong> تقوم <span class="tech-term">React</span> تلقائيًا بتهريب (<span class="tech-term">escapes</span>) كيانات <span class="tech-term">HTML</span> في تعبيرات <span class="tech-term">JSX</span>، مما يمنع هجمات <span class="tech-term">XSS</span> المنعكسة.
+                </li>
+                <li>
+                    <strong>No dangerouslySetInnerHTML:</strong> يتجنب التطبيق استخدام مفرّ <span class="tech-term">React</span> لحقن <span class="tech-term">HTML</span> الخام.
+                </li>
+                <li>
+                    <strong>Content Security Policy:</strong> تقيد ترويسة <span class="tech-term">CSP</span> تنفيذ النصوص البرمجية على <span class="tech-term">'self'</span> فقط.
+                </li>
+            </ul>
+            <p>
+                تنفذ الواجهة الأمامية عرضًا محكومًا بالأذونات باستخدام خطاف <span class="tech-term">usePermissions()</span> الذي يستمد أذونات المستخدم الحالية من مطالبات <span class="tech-term">JWT</span> الخاصة به. يتم عرض عناصر التنقل وأزرار الإجراءات والمسارات المحمية بشكل شرطي بناءً على دور المستخدم، مما يمنع هجمات الهندسة الاجتماعية على عناصر واجهة المستخدم المرئية.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 42)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">42</footer>
+        <div class="page-content">
+            <h3>3.3.8 AI and Integration Security</h3>
+            <p>
+                يمكن للمستأجرين تكوين بيانات اعتماد مزود الذكاء الاصطناعي الخاصة بهم (مفاتيح <span class="tech-term">API</span> لـ <span class="tech-term">OpenAI</span>, <span class="tech-term">Google Gemini</span>, <span class="tech-term">Groq</span>, <span class="tech-term">Anthropic</span>). يتم تخزين بيانات الاعتماد هذه باستخدام <span class="tech-term">Supabase Vault</span> (تشفير <span class="tech-term">AES-256</span>):
+            </p>
+            <ol>
+                <li>عندما يقدم المستأجر مفتاح <span class="tech-term">API</span>، يتم تشفيره وتخزينه في <span class="tech-term">Supabase Vault</span>.</li>
+                <li>يعيد <span class="tech-term">Vault</span> معرّف سر الخزنة (<span class="tech-term">vault_secret_id</span>) وهو مرجع <span class="tech-term">UUID</span>.</li>
+                <li>يخزن جدول <span class="tech-term">tenant_ai_credentials</span> فقط <span class="tech-term">vault_secret_id</span>، وليس المفتاح النصي أبدًا.</li>
+                <li>عند الحاجة إلى المفتاح لإجراء استدعاء <span class="tech-term">API</span> للذكاء الاصطناعي، يتم استرداده من <span class="tech-term">Vault</span> في وقت التشغيل ويستخدم في الذاكرة فقط.</li>
+                <li>يحتوي جدول <span class="tech-term">tenant_ai_credentials</span> على سياسة <span class="tech-term">RLS</span> الأكثر صرامة: فقط <span class="tech-term">service_role</span> لديه حق الوصول الكامل.</li>
+            </ol>
+            <p>
+                يفرض خط أنابيب <span class="tech-term">RAG</span> عزل المستأجر في مرحلة الاسترجاع. يتم تخزين تضمينات المتجهات (<span class="tech-term">Vector embeddings</span>) لقاعدة معارف كل مستأجر في مخططه الخاص بالمستأجر. يتم تنفيذ عمليات بحث التشابه باستخدام جيب التمام (<span class="tech-term">Cosine similarity</span>) ضد مخطط المستأجر فقط (عبر تحديد نطاق <span class="tech-term">search_path</span>). من المستحيل معماريًا أن تتضمن استجابة الذكاء الاصطناعي للمستأجر "أ" محتوى من قاعدة معارف المستأجر "ب".
+            </p>
+            
+            <figure>
+                <img src="9.png" alt="مخطط يوضح تدفق عملية تأمين الذكاء الاصطناعي، من إدخال المستخدم إلى استجابة الذكاء الاصطناعي المفلترة.">
+                <figcaption>
+                    <span class="figure-title">Figure 3.4: AI Security and RAG Pipeline Flow</span>
+                    <br>
+                    يوضح هذا المخطط الإجرائي التدابير الأمنية المطبقة على ميزات الذكاء الاصطناعي. تبدأ العملية بضوابط الإدخال (فحص الطول والقوائم السوداء)، تليها عملية استرجاع RAG المعزولة تمامًا لكل مستأجر. قبل إرسال الطلب إلى مزود الذكاء الاصطناعي، يتم فك تشفير مفتاح API بشكل آمن. أخيرًا، تخضع الاستجابة لضوابط المخرجات قبل تسليمها للمستخدم، مما يضمن دورة حياة آمنة بالكامل.
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 43)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">43</footer>
+        <div class="page-content">
+            <p>يتم التحكم في سلوك الذكاء الاصطناعي من خلال حقول على مستوى قاعدة البيانات:</p>
+            <table>
+                <caption>Table 3.16: AI Security Configuration Fields</caption>
+                <thead>
+                    <tr><th lang="en">Field</th><th lang="en">Type</th><th lang="en">Security Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">custom_prompt_addition</td><td lang="en">text (max 500 chars)</td><td lang="en">Limits prompt injection surface</td></tr>
+                    <tr><td lang="en">forbidden_topics</td><td lang="en">text[]</td><td lang="en">Blocklist preventing AI from discussing specified topics</td></tr>
+                    <tr><td lang="en">max_response_length</td><td lang="en">integer</td><td lang="en">Prevents excessively long responses</td></tr>
+                    <tr><td lang="en">temperature</td><td lang="en">float (0.0–1.0)</td><td lang="en">Controls response randomness</td></tr>
+                </tbody>
+            </table>
+
+            <p>يتم تحديد معدل استخدام الذكاء الاصطناعي على مستويات متعددة:</p>
+            <table>
+                <caption>Table 3.17: AI Rate Limiting Quotas per Tenant</caption>
+                <thead>
+                    <tr><th lang="en">Quota Level</th><th lang="en">Enforcement</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Per-session</td><td lang="en">10 messages per minute (token bucket)</td></tr>
+                    <tr><td lang="en">Per-user</td><td lang="en">100 messages per day (token bucket)</td></tr>
+                    <tr><td lang="en">Burst protection</td><td lang="en">3 messages per second (global)</td></tr>
+                    <tr><td lang="en">Per-tenant monthly</td><td lang="en">Configurable in tenant_ai_limits</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 44)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">44</footer>
+        <div class="page-content">
+            <h3>3.3.9 Audit and Monitoring</h3>
+            <p>
+                يطبق نظام <span class="tech-term">HSA</span> عدد 29 مُحفِّزًا (<span class="tech-term">triggers</span>) لكل مخطط مستأجر و 22+ مُحفِّزًا في المخطط العام، بإجمالي 51+ مُحفِّزًا عبر المنصة، تخدم أربع وظائف أمنية أساسية:
+            </p>
+            <ol>
+                <li>
+                    <strong>Timestamp Integrity (16 triggers):</strong> تعيين تلقائي لطوابع <span class="tech-term">updated_at</span> عند تعديل الصفوف، مما يضمن تتبع تعديل دقيق لا يمكن التلاعب به من قبل طبقة التطبيق.
+                </li>
+                <li>
+                    <strong>Realtime Security Notifications (5 triggers):</strong> إرسال إشعارات عبر <span class="tech-term">Supabase Realtime</span> للأحداث ذات الصلة بالأمن: رسائل جديدة، تنبيهات محادثات الذكاء الاصطناعي، تغييرات حالة التسليم.
+                </li>
+                <li>
+                    <strong>Workflow Enforcement (5 triggers):</strong> أتمتة تدفقات العمل الحساسة أمنيًا: فرض المواعيد النهائية لاتفاقية مستوى الخدمة (<span class="tech-term">SLA</span>)، التعيين التلقائي للتصعيد، الإلغاء التلقائي للتحويلات المعلقة.
+                </li>
+                <li>
+                    <strong>Data Integrity Enforcement (2 triggers):</strong> منع انتهاكات قواعد العمل: حظر مديري الفرق المكررين، التحقق من صحة تعيينات دور مدير الفريق.
+                </li>
+            </ol>
+            <p>يسجل جدول <span class="tech-term">public.audit_logs</span> جميع الإجراءات ذات الصلة بالأمن:</p>
+            <table>
+                <caption>Table 3.18: Audit Log Database Schema</caption>
+                <thead>
+                    <tr><th lang="en">Column</th><th lang="en">Type</th><th lang="en">Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">id</td><td lang="en">UUID</td><td lang="en">Unique event identifier</td></tr>
+                    <tr><td lang="en">action</td><td lang="en">text</td><td lang="en">Action performed (e.g., user.login, ticket.delete)</td></tr>
+                    <tr><td lang="en">table_name</td><td lang="en">text</td><td lang="en">Affected database table</td></tr>
+                    <tr><td lang="en">record_id</td><td lang="en">UUID</td><td lang="en">Affected record identifier</td></tr>
+                    <tr><td lang="en">old_data</td><td lang="en">JSONB</td><td lang="en">Record state before modification</td></tr>
+                    <tr><td lang="en">new_data</td><td lang="en">JSONB</td><td lang="en">Record state after modification</td></tr>
+                    <tr><td lang="en">user_id</td><td lang="en">UUID</td><td lang="en">Authenticated user who performed the action</td></tr>
+                    <tr><td lang="en">ip_address</td><td lang="en">inet</td><td lang="en">Source IP address</td></tr>
+                    <tr><td lang="en">user_agent</td><td lang="en">text</td><td lang="en">Client user agent string</td></tr>
+                    <tr><td lang="en">created_at</td><td lang="en">timestamptz</td><td lang="en">Event timestamp (database-generated)</td></tr>
+                </tbody>
+            </table>
+            <p>
+                <strong>Immutability enforcement:</strong> لا توجد سياسات <span class="tech-term">RLS</span> لـ <span class="tech-term">UPDATE</span> أو <span class="tech-term">DELETE</span> على جدول <span class="tech-term">audit_logs</span>. أي اتصال مفروض عليه <span class="tech-term">RLS</span> يمكنه فقط <span class="tech-term">INSERT</span> سجلات جديدة و <span class="tech-term">SELECT</span> السجلات الموجودة.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 45)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">45</footer>
+        <div class="page-content">
+            <h2>3.4 Threat Model (STRIDE)</h2>
+            <figure>
+                <img src="10.png" alt="مصفوفة المخاطر الكاملة لنموذج التهديد STRIDE.">
+                <figcaption>
+                    <span class="figure-title">Figure 3.4: STRIDE Threat Model: Full Risk Matrix</span>
+                    <br>
+                    تلخص هذه المصفوفة الشاملة جميع التهديدات المحددة التي تم تحليلها باستخدام إطار <span class="tech-term">STRIDE</span>. يتم تجميع التهديدات حسب الفئات الست (Spoofing, Tampering, etc.). لكل تهديد، يتم تحديد الضابط الأمني (<span class="tech-term">Control</span>) المطبق للتخفيف منه، وتقييم مستوى الخطر المتبقي (<span class="tech-term">Residual Risk</span>) بعد تطبيق الضابط (منخفض، متوسط، مرتفع). هذه المصفوفة هي النتيجة النهائية لعملية نمذجة التهديدات وتعمل كخريطة طريق لأمن النظام.
+                </figcaption>
+            </figure>
+             <div class="highlight-box">
+                <span class="designer-note-title">إضافة المصمم:</span>
+                <p>
+                    تعتبر مصفوفة المخاطر هذه الأداة الأكثر أهمية في تقييم الوضع الأمني لأي نظام. إنها لا تكتفي فقط بسرد التهديدات، بل تربط كل تهديد بإجراء دفاعي ملموس وتقيّم فعالية هذا الإجراء. على سبيل المثال، تهديد "JWT Forgery" يتم التخفيف منه عبر "RS256 Signature"، والخطر المتبقي يُقيّم بأنه "منخفض". هذا يسمح لأصحاب المصلحة بفهم المخاطر المتبقية واتخاذ قرارات مستنيرة بشأنها.
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 46)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">46</footer>
+        <div class="page-content">
+            <h3>3.4.1 Threat Actors</h3>
+            <p>
+                تم تحديد سبعة ملفات تعريف للجهات الفاعلة في التهديد لمنصة <span class="tech-term">HSA</span>:
+            </p>
+            <table>
+                <caption>Table 3.19: STRIDE Threat Actor Profiles</caption>
+                <thead>
+                    <tr><th lang="en">Actor</th><th lang="en">Motivation</th><th lang="en">Capability</th><th lang="en">Likely Attack Vector</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">External attacker</td><td lang="en">Data theft, ransom, disruption</td><td lang="en">Variable</td><td lang="en">Auth bypass, injection, webhook spoofing</td></tr>
+                    <tr><td lang="en">Malicious customer</td><td lang="en">Access competitor tenant data</td><td lang="en">Low</td><td lang="en">IDOR, JWT manipulation, tenant enumeration</td></tr>
+                    <tr><td lang="en">Rogue support agent</td><td lang="en">Access unauthorized tickets</td><td lang="en">Medium</td><td lang="en">Role boundary bypass, API parameter tampering</td></tr>
+                    <tr><td lang="en">Compromised admin</td><td lang="en">Exfiltrate all tenant data</td><td lang="en">High</td><td lang="en">Legitimate access + data export</td></tr>
+                    <tr><td lang="en">Platform competitor</td><td lang="en">Tenant data theft</td><td lang="en">High</td><td lang="en">Long-term targeted attack</td></tr>
+                    <tr><td lang="en">Script kiddie</td><td lang="en">Defacement, DoS</td><td lang="en">Low</td><td lang="en">Brute force, common exploits</td></tr>
+                    <tr><td lang="en">Internal developer</td><td lang="en">Accidental misconfiguration</td><td lang="en">Variable</td><td lang="en">Misconfigured RLS, exposed keys</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.4.2 STRIDE Analysis Summary</h3>
+            <p>
+                حدد تحليل <span class="tech-term">STRIDE</span> تهديدات عبر الفئات الست جميعها وربط كل منها بضوابط منفذة محددة:
+            </p>
+            <p><strong>Spoofing (5 threats identified):</strong></p>
+            <table>
+                <caption>Table 3.20: STRIDE Threat Analysis Summary</caption>
+                <thead>
+                    <tr><th lang="en">Threat</th><th lang="en">Controls</th><th lang="en">Residual Risk</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">JWT forgery</td><td lang="en">JWT verified by Supabase (RS256 signature)</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Session hijacking</td><td lang="en">HTTP-only, Secure, SameSite=Lax cookies</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Webhook impersonation</td><td lang="en">HMAC-SHA256 signature verification (all 5 channels)</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Tenant impersonation</td><td lang="en">Schema isolation + RLS + tenant claims in JWT</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">IP spoofing (rate limit bypass)</td><td lang="en">X-Forwarded-For used — can be spoofed</td><td lang="en">Medium</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 47)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">47</footer>
+        <div class="page-content">
+            <p><strong>Tampering (5 threats identified):</strong></p>
+            <table>
+                <caption>Table 3.21: Tampering Threats</caption>
+                <thead>
+                    <tr><th lang="en">Threat</th><th lang="en">Controls</th><th lang="en">Residual Risk</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Database record modification</td><td lang="en">RLS + service_role server-side only</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Audit log deletion</td><td lang="en">No UPDATE/DELETE RLS policy (immutability)</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">JWT claims manipulation</td><td lang="en">Cryptographic signature verification</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Schema migration injection</td><td lang="en">Source code controlled, versioned</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">File upload attack</td><td lang="en">MIME validation + Supabase Storage policies</td><td lang="en">Medium</td></tr>
+                </tbody>
+            </table>
+
+            <p><strong>Repudiation (3 threats identified):</strong></p>
+            <table>
+                <caption>Table 3.22: Repudiation Threats</caption>
+                <thead>
+                    <tr><th lang="en">Threat</th><th lang="en">Controls</th><th lang="en">Residual Risk</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Admin denies action</td><td lang="en">Audit log with user_id, IP, timestamp</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Agent denies message</td><td lang="en">Conversation log with actor_id</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Attacker covers tracks</td><td lang="en">Audit logs immutable via RLS</td><td lang="en">Low</td></tr>
+                </tbody>
+            </table>
+
+            <p><strong>Information Disclosure (5 threats identified):</strong></p>
+            <table>
+                <caption>Table 3.23: Information Disclosure Threats</caption>
+                <thead>
+                    <tr><th lang="en">Threat</th><th lang="en">Controls</th><th lang="en">Residual Risk</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Cross-tenant data leak</td><td lang="en">Schema isolation + RLS policies</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Error message leakage</td><td lang="en">Production error sanitization</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">JWT claims exposure</td><td lang="en">Claims contain no secrets (IDs/roles only)</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Environment variable leak</td><td lang="en">.gitignore + Vercel encrypted secrets</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">AI prompt data leakage</td><td lang="en">Tenant-isolated RAG + forbidden topics</td><td lang="en">Medium</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 48)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">48</footer>
+        <div class="page-content">
+            <p><strong>Denial of Service (5 threats identified):</strong></p>
+            <table>
+                <caption>Table 3.24: Denial of Service Threats</caption>
+                <thead>
+                    <tr><th lang="en">Threat</th><th lang="en">Controls</th><th lang="en">Residual Risk</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Auth endpoint flooding</td><td lang="en">Rate limiting (5 attempts/15 min)</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">API flooding</td><td lang="en">Rate limiting (100 requests/min per IP)</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Webhook flooding</td><td lang="en">HMAC verification rejects invalid requests</td><td lang="en">Medium</td></tr>
+                    <tr><td lang="en">AI cost attack</td><td lang="en">Per-tenant AI quotas + token bucket</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Distributed rate limit bypass</td><td lang="en">In-memory per-instance rate limit</td><td lang="en">Medium</td></tr>
+                </tbody>
+            </table>
+
+            <p><strong>Elevation of Privilege (5 threats identified):</strong></p>
+            <table>
+                <caption>Table 3.25: Elevation of Privilege Threats</caption>
+                <thead>
+                    <tr><th lang="en">Threat</th><th lang="en">Controls</th><th lang="en">Residual Risk</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Role bypass in API</td><td lang="en">Server-side role check + RLS</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Tenant admin → system admin</td><td lang="en">Requires tenants.create permission</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Customer → agent escalation</td><td lang="en">Role from JWT only, not request body</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">IDOR in ticket access</td><td lang="en">RLS + server-side ownership check</td><td lang="en">Low</td></tr>
+                    <tr><td lang="en">Scoped admin → full admin</td><td lang="en">Permission check in withPermissionCheck</td><td lang="en">Low</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 49)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">49</footer>
+        <div class="page-content">
+            <h3>3.4.3 STRIDE Coverage Summary</h3>
+            <table>
+                <caption>Table 3.26: STRIDE Threat Coverage — Residual Risk Distribution</caption>
+                <thead>
+                    <tr>
+                        <th lang="en">Category</th><th lang="en">Threats Identified</th>
+                        <th lang="en">Low Risk</th><th lang="en">Medium Risk</th>
+                        <th lang="en">High Risk</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Spoofing</td><td lang="en">5</td><td lang="en">4</td><td lang="en">1</td><td lang="en">0</td></tr>
+                    <tr><td lang="en">Tampering</td><td lang="en">5</td><td lang="en">4</td><td lang="en">1</td><td lang="en">0</td></tr>
+                    <tr><td lang="en">Repudiation</td><td lang="en">3</td><td lang="en">3</td><td lang="en">0</td><td lang="en">0</td></tr>
+                    <tr><td lang="en">Information Disclosure</td><td lang="en">5</td><td lang="en">4</td><td lang="en">1</td><td lang="en">0</td></tr>
+                    <tr><td lang="en">Denial of Service</td><td lang="en">5</td><td lang="en">3</td><td lang="en">2</td><td lang="en">0</td></tr>
+                    <tr><td lang="en">Elevation of Privilege</td><td lang="en">5</td><td lang="en">5</td><td lang="en">0</td><td lang="en">0</td></tr>
+                    <tr><td lang="en"><strong>Total</strong></td><td lang="en"><strong>28</strong></td><td lang="en"><strong>23 (82%)</strong></td><td lang="en"><strong>5 (18%)</strong></td><td lang="en"><strong>0 (0%)</strong></td></tr>
+                </tbody>
+            </table>
+            
+            <figure>
+                <img src="11.png" alt="رسم بياني يوضح توزيع المخاطر المتبقية عبر فئات STRIDE.">
+                <figcaption>
+                    <strong>رسم بياني لتوزيع المخاطر المتبقية بعد تطبيق الضوابط.</strong>
+                    <br>
+                    يوضح هذا الرسم البياني أن الغالبية العظمى من التهديدات (الخط الأزرق الذي يمثل عدد التهديدات لكل فئة) تم تخفيفها إلى مستوى "خطر منخفض"، مع وجود عدد قليل من التهديدات ذات "الخطر المتوسط" المتبقي، وعدم وجود أي تهديدات ذات "خطر عالٍ". هذا يثبت فعالية الضوابط الأمنية المطبقة.
+                </figcaption>
+            </figure>
+
+            <p>
+                تمت معالجة جميع التهديدات المحددة الـ 28 بضوابط أمنية محددة. تم تقييم 82% من التهديدات على أنها ذات خطر متبقٍ منخفض، ولا توجد أي تهديدات متبقية ذات خطر عالٍ.
+            </p>
+        </div>
+    </section>
+
+<!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 50)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">50</footer>
+        <div class="page-content">
+            <h2>3.5 Testing Plan and Evaluation Metrics</h2>
+
+            <h3>3.5.1 Security Testing Approach</h3>
+            <p>
+                تقيّم استراتيجية اختبار الأمان الضوابط المطبقة عبر خمسة مجالات اختبار:
+            </p>
+            <table>
+                <caption>Table 3.27: Security Testing Plan</caption>
+                <thead>
+                    <tr><th lang="en">Domain</th><th lang="en">Testing Method</th><th lang="en">Coverage</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">Access Control</td><td lang="en">Boundary testing – verify each role's permitted resources</td><td lang="en">All 4 roles × all API routes</td></tr>
+                    <tr><td lang="en">Tenant Isolation</td><td lang="en">Cross-tenant access attempts</td><td lang="en">Schema isolation + RLS</td></tr>
+                    <tr><td lang="en">RLS Policies</td><td lang="en">Direct SQL queries under different auth contexts</td><td lang="en">All 58 policies</td></tr>
+                    <tr><td lang="en">Rate Limiting</td><td lang="en">Automated request flooding</td><td lang="en">Login, registration, forgot password, general API</td></tr>
+                    <tr><td lang="en">Webhook Security</td><td lang="en">Spoofed webhook requests with invalid signatures</td><td lang="en">All 5 channels</td></tr>
+                </tbody>
+            </table>
+
+            <h3>3.5.2 Evaluation Metrics</h3>
+            <p>
+                يتم تقييم الأمان باستخدام المقاييس الكمية التالية:
+            </p>
+            <table>
+                <caption>Table 3.28: Security Evaluation Metrics</caption>
+                <thead>
+                    <tr><th lang="en">Metric</th><th lang="en">Target</th><th lang="en">Actual</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td lang="en">RLS policy count (total)</td><td lang="en">All tables covered</td><td lang="en">58 policies</td></tr>
+                    <tr><td lang="en">Database triggers per tenant</td><td lang="en">≥25</td><td lang="en">29</td></tr>
+                    <tr><td lang="en">STRIDE threat coverage</td><td lang="en">All 6 categories</td><td lang="en">28 threats addressed</td></tr>
+                    <tr><td lang="en">Residual high-risk threats</td><td lang="en">0</td><td lang="en">0</td></tr>
+                    <tr><td lang="en">Security headers implemented</td><td lang="en">≥5</td><td lang="en">7 headers + full CSP</td></tr>
+                    <tr><td lang="en">Rate-limited endpoints</td><td lang="en">All auth + API</td><td lang="en">Login, register, forgot, general, chat</td></tr>
+                    <tr><td lang="en">HMAC-verified webhooks</td><td lang="en">All channels</td><td lang="en">5 of 5 channels</td></tr>
+                    <tr><td lang="en">Trust zones defined</td><td lang="en">≥3</td><td lang="en">4 zones</td></tr>
+                    <tr><td lang="en">Defense-in-depth layers</td><td lang="en">≥3</td><td lang="en">4 independent layers</td></tr>
+                    <tr><td lang="en">Production tenants validated</td><td lang="en">≥10</td><td lang="en">13+ live tenants</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ===================================================================
+         Chapter 3: System Design and Methodology - Content (Page 51)
+    ==================================================================== -->
+    <section class="page">
+        <header class="page-header">HSA: A Defense-in-Depth SaaS Architecture</header>
+        <footer class="page-footer">51</footer>
+        <div class="page-content">
+            <h3>3.5.3 Security Metrics Definition</h3>
+            <p>
+                لأغراض تقييم الأمن السيبراني، يتم تعريف المقاييس التالية:
+            </p>
+            <ul>
+                <li>
+                    <strong>Attack Surface Coverage:</strong> النسبة المئوية لنواقل الهجوم المحددة (من تحليل <span class="tech-term">STRIDE</span>) التي لديها ضابط واحد على الأقل مطبق. الهدف: 100%. المحقق: 100% (28/28 تهديدًا تمت معالجته).
+                </li>
+                <li>
+                    <strong>Defense Layer Depth:</strong> عدد طبقات الإنفاذ الأمني المستقلة التي يجب على طلب خبيث تجاوزها للوصول إلى البيانات الحساسة. الهدف: ≥3. المحقق: 4 طبقات.
+                </li>
+                <li>
+                    <strong>Audit Log Completeness:</strong> النسبة المئوية لعمليات قاعدة البيانات ذات الصلة بالأمن التي تولد إدخالات في سجل التدقيق. يتم قياسها من خلال تغطية المُحفِّزات (<span class="tech-term">triggers</span>) عبر الجداول ذات الأهمية الأمنية.
+                </li>
+                <li>
+                    <strong>Isolation Strength:</strong> تقييم نوعي لعزل المستأجر — يُصنّف "قوي" (<span class="tech-term">strong</span>) لنموذج مخطط لكل مستأجر مع <span class="tech-term">RLS</span>، و "متوسط" (<span class="tech-term">moderate</span>) لـ <span class="tech-term">RLS</span> فقط، و "ضعيف" (<span class="tech-term">weak</span>) للتصفية على مستوى التطبيق فقط. تصنيف <span class="tech-term">HSA</span>: قوي.
+                </li>
+            </ul>
+            <p class="chapter-outro">
+                بهذا يختتم فصل التصميم والمنهجية. الفصل التالي، "النتائج والمناقشة"، سيقدم البيانات الملموسة والتحليلات المستمدة من تطبيق هذه البنية في بيئة إنتاج حقيقية.
+            </p>
+        </div>
+    </section>
+
 </body>
 </html>
